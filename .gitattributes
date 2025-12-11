@@ -1,0 +1,15 @@
+# Normalize text files and mark common binaries
+* text=auto
+
+# Images and binaries
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.sqlite binary
+
+# Keep certain files text with LF
+*.sh text eol=lf
