@@ -4,9 +4,24 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+// Bootstrap the application
+
+define('FCPATH', __DIR__ . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR);
+
+chdir(FCPATH);
+
+require FCPATH . '../app/Config/Paths.php';
+
+$paths = new Paths();
+
+require $paths->systemDirectory . '/Boot.php';
+
+Boot::bootWeb($paths);
+
 use CodeIgniter\Config\Factories;
 use CodeIgniter\Database\Config;
 use CodeIgniter\Database\MigrationRunner;
+use CodeIgniter\Config\Services;
 
 // Load environment (optional)
 if (file_exists(__DIR__ . '/.env')) {
@@ -14,10 +29,15 @@ if (file_exists(__DIR__ . '/.env')) {
     // or environment variables are set manually
 }
 
-try {
-    // Get database config
-    $config = config('Database');
+// If CodeIgniter helper functions are not available, abort with guidance
+if (!function_exists('config')) {
+    echo "⚠️  This script relies on CodeIgniter runtime helpers which are not available in this CLI context.\n";
+    echo "Run migrations using the framework tooling instead:\n  php spark migrate\n";
+    echo "Or bootstrap the application before running this script.\n";
+    exit(1);
+}
 
+try {
     // Create database connection
     $db = \Config\Database::connect();
 

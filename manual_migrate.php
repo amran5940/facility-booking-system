@@ -5,6 +5,7 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use CodeIgniter\Config\Factories;
+use CodeIgniter\Config\Services;
 use CodeIgniter\Database\Config;
 use CodeIgniter\Database\MigrationRunner;
 use CodeIgniter\CLI\CLI;
@@ -13,6 +14,23 @@ use CodeIgniter\CLI\CLI;
 if (file_exists(__DIR__ . '/.env')) {
     // Note: This script assumes .env is already loaded by the web server
     // or environment variables are set manually
+}
+
+// Bootstrap CodeIgniter runtime when running from CLI so helpers like
+// config() and Services are available. This mirrors what `spark` does.
+if (!function_exists('config')) {
+    // If CodeIgniter helpers are not available, delegate to the project's
+    // `spark` CLI which bootstraps the framework correctly.
+    $spark = __DIR__ . DIRECTORY_SEPARATOR . 'spark';
+    if (file_exists($spark)) {
+        echo "⚠️  Bootstrapping via spark CLI...\n\n";
+        passthru(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($spark) . ' migrate 2>&1', $ret);
+        exit($ret);
+    }
+
+    echo "⚠️  CodeIgniter runtime not available and 'spark' not found or not executable.\n";
+    echo "Run migrations using: php spark migrate\n";
+    exit(1);
 }
 
 try {
@@ -81,8 +99,14 @@ try {
             $instance = new $fullClassName();
             $instance->up();
 
-            // Record in history
-            $runner->addHistory($migration->version, $migration->class);
+            // Record in history by inserting directly into the migrations table
+            $db->table('migrations')->insert([
+                'version' => $migration->version,
+                'class' => $migration->class,
+                'group' => 'default',
+                'namespace' => $migration->namespace,
+                'time' => time(),
+            ]);
 
             echo "✅ SUCCESS\n";
 
