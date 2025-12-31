@@ -275,6 +275,16 @@
                 <label for="description" class="form-label">Penerangan</label>
                 <textarea class="form-control" id="description" name="description" rows="3"></textarea>
             </div>
+            <div class="mb-3">
+                <label for="default_field_set" class="form-label">Pilih Set Medan Lalai (pilihan)</label>
+                <select class="form-control" id="default_field_set" name="default_field_set">
+                    <option value="">Tiada</option>
+                    <?php foreach ($default_field_sets as $set): ?>
+                        <option value="<?= esc($set) ?>"><?= esc($set) ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <small class="form-text text-muted">Jika dipilih, medan lalai tersebut akan dimasukkan automatik ke kategori baharu ini.</small>
+            </div>
             <button type="submit" class="btn btn-modern">
                 <i class="fas fa-save me-2"></i>Cipta Kategori
             </button>

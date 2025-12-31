@@ -297,37 +297,43 @@
         box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
     }
 
+    #calendarPicker .calendar-months-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
     #calendarPicker .calendar-month {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
     }
 
     #calendarPicker .calendar-header {
         text-align: center;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
         font-weight: 600;
         color: #667eea;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
     }
 
     #calendarPicker .calendar-weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.3rem;
-        margin-bottom: 0.5rem;
+        gap: 0.2rem;
+        margin-bottom: 0.3rem;
     }
 
     #calendarPicker .calendar-weekday {
         text-align: center;
         font-weight: 600;
         color: #667eea;
-        font-size: 0.7rem;
-        padding: 0.25rem;
+        font-size: 0.65rem;
+        padding: 0.15rem;
     }
 
     #calendarPicker .calendar-days {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 0.3rem;
+        gap: 0.2rem;
     }
 
     #calendarPicker .calendar-day {
@@ -335,14 +341,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border-radius: 6px;
+        border-radius: 4px;
         cursor: pointer;
-        border: 2px solid transparent;
+        border: 1px solid transparent;
         transition: all 0.2s ease;
         font-weight: 500;
         color: #2c3e50;
         user-select: none;
-        font-size: 0.85rem;
+        font-size: 0.7rem;
+        padding: 0.15rem;
     }
 
     #calendarPicker .calendar-day.empty {
@@ -358,7 +365,7 @@
 
     #calendarPicker .calendar-day.selectable {
         background: white;
-        border: 2px solid #e9ecef;
+        border: 1px solid #e9ecef;
     }
 
     #calendarPicker .calendar-day.selectable:hover {
@@ -371,7 +378,7 @@
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-color: #667eea;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         font-weight: 600;
     }
 
@@ -626,6 +633,18 @@
                     <p class="mt-3 mb-0">
                         <?= esc($facility['description'] ?: 'Tiada penerangan tambahan untuk fasiliti ini.') ?>
                     </p>
+                    <?php if (isset($facility['pricing_type'])): ?>
+                        <div class="mt-3 p-3" style="background: rgba(102, 126, 234, 0.08); border-radius: 10px; border-left: 4px solid #667eea;">
+                            <small style="color: #666; display: block; margin-bottom: 0.5rem;"><i class="fas fa-money-bill-wave me-1"></i>Maklumat Harga:</small>
+                            <?php if ($facility['pricing_type'] === 'hourly'): ?>
+                                <strong style="color: #667eea; font-size: 1.25rem;">RM <?= number_format($facility['price_per_hour'], 2) ?></strong>
+                                <span style="color: #666;"> / jam</span>
+                            <?php else: ?>
+                                <strong style="color: #667eea; font-size: 1.25rem;">RM <?= number_format($facility['price_per_day'], 2) ?></strong>
+                                <span style="color: #666;"> / hari</span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -694,10 +713,9 @@
                                 </label>
                                 <select class="form-control" id="payment_gateway" name="payment_gateway" required>
                                     <option value="">Pilih Kaedah Pembayaran</option>
-                                    <option value="online_banking">Perbankan Dalam Talian (FPX)</option>
-                                    <option value="credit_card">Kad Kredit</option>
-                                    <option value="debit_card">Kad Debit</option>
-                                    <option value="cash">Tunai</option>
+                                    <?php foreach ($paymentGateways as $gateway): ?>
+                                        <option value="<?= esc($gateway['code']) ?>"><?= esc($gateway['name']) ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
 
@@ -716,12 +734,18 @@
                             <div class="col-md-6 mb-3">
                                 <label for="total_amount" class="form-label">
                                     <i class="fas fa-calculator"></i>
-                                    Jumlah Keseluruhan (RM) - Pilihan
+                                    Jumlah Keseluruhan (RM)
                                 </label>
                                 <input type="number" class="form-control" id="total_amount" name="total_amount"
-                                       placeholder="0.00" step="0.01" min="0">
-                                <small class="text-muted">Kos penuh termasuk deposit</small>
+                                       placeholder="0.00" step="0.01" min="0" readonly style="background-color: #f8f9fa; font-weight: 600; font-size: 1.1rem;">
+                                <small class="text-muted">Dikira secara automatik berdasarkan hari dipilih</small>
                             </div>
+                        </div>
+
+                        <div class="alert alert-success" id="priceBreakdown" style="border-radius: 10px; border-left: 4px solid #28a745; display: none;">
+                            <i class="fas fa-receipt me-2"></i>
+                            <strong>Pecahan Harga:</strong><br>
+                            <div id="priceDetails"></div>
                         </div>
 
                         <div class="alert alert-info" style="border-radius: 10px; border-left: 4px solid #17a2b8;">
@@ -782,32 +806,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate calendar
     const generateCalendar = () => {
-        const date = new Date(currentViewYear, currentViewMonth, 1);
-        const month = date.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
-
-        // Generate single month with navigation
-        let html = `
-            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
-                <button type="button" id="prevMonth" class="btn btn-outline-primary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <h5 style="margin: 0; min-width: 200px; text-align: center; font-weight: 700;">${month}</h5>
-                <button type="button" id="nextMonth" class="btn btn-outline-primary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        `;
+        // Generate two consecutive months (current and next)
+        let html = '<div class="calendar-months-container">';
+        
+        for (let monthOffset = 0; monthOffset < 2; monthOffset++) {
+            const date = new Date(currentViewYear, currentViewMonth + monthOffset, 1);
+            const month = date.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
             
             html += `<div class="calendar-month">
                 <div class="calendar-header">${month}</div>
                 <div class="calendar-weekdays">
-                    <div class="calendar-weekday">Ahad</div>
-                    <div class="calendar-weekday">Isnin</div>
-                    <div class="calendar-weekday">Selasa</div>
-                    <div class="calendar-weekday">Rabu</div>
-                    <div class="calendar-weekday">Khamis</div>
-                    <div class="calendar-weekday">Jumaat</div>
-                    <div class="calendar-weekday">Sabtu</div>
+                    <div class="calendar-weekday">Ahd</div>
+                    <div class="calendar-weekday">Isn</div>
+                    <div class="calendar-weekday">Sel</div>
+                    <div class="calendar-weekday">Rab</div>
+                    <div class="calendar-weekday">Kha</div>
+                    <div class="calendar-weekday">Jum</div>
+                    <div class="calendar-weekday">Sab</div>
                 </div>
                 <div class="calendar-days">`;
 
@@ -853,6 +868,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             html += '</div></div>';
+        }
+        
+        html += '</div>';
+        
+        // Add navigation buttons
+        html = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <button type="button" id="prevMonth" class="btn btn-sm btn-outline-primary" style="border-radius: 8px; padding: 0.4rem 0.8rem;">
+                    <i class="fas fa-chevron-left"></i> Prev
+                </button>
+                <button type="button" id="nextMonth" class="btn btn-sm btn-outline-primary" style="border-radius: 8px; padding: 0.4rem 0.8rem;">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        ` + html;
 
         calendarContainer.innerHTML = html;
 
@@ -971,6 +1001,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
         selectedDaysList.innerHTML = dateStrings.join(', ');
         totalDaysSpan.textContent = selectedDates.length;
+        
+        // Calculate total price
+        calculateTotalPrice();
+    };
+    
+    // Calculate total price based on selected dates
+    const calculateTotalPrice = () => {
+        const totalAmountInput = document.getElementById('total_amount');
+        const priceBreakdown = document.getElementById('priceBreakdown');
+        const priceDetails = document.getElementById('priceDetails');
+        
+        if (selectedDates.length === 0) {
+            totalAmountInput.value = '';
+            priceBreakdown.style.display = 'none';
+            return;
+        }
+        
+        const pricingType = '<?= $facility['pricing_type'] ?? 'daily' ?>';
+        const pricePerHour = parseFloat('<?= $facility['price_per_hour'] ?? 0 ?>');
+        const pricePerDay = parseFloat('<?= $facility['price_per_day'] ?? 0 ?>');
+        
+        let totalPrice = 0;
+        let breakdown = '';
+        
+        if (pricingType === 'hourly') {
+            // For hourly pricing, assume 8 hours per day (can be customized)
+            const hoursPerDay = 8;
+            totalPrice = selectedDates.length * hoursPerDay * pricePerHour;
+            breakdown = `${selectedDates.length} hari × ${hoursPerDay} jam × RM ${pricePerHour.toFixed(2)} = RM ${totalPrice.toFixed(2)}`;
+        } else {
+            // Daily pricing
+            totalPrice = selectedDates.length * pricePerDay;
+            breakdown = `${selectedDates.length} hari × RM ${pricePerDay.toFixed(2)} = RM ${totalPrice.toFixed(2)}`;
+        }
+        
+        totalAmountInput.value = totalPrice.toFixed(2);
+        priceDetails.innerHTML = breakdown;
+        priceBreakdown.style.display = 'block';
     };
 
     // Form validation
@@ -983,9 +1051,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Validate deposit amount
         const depositAmount = parseFloat(document.getElementById('deposit_amount').value);
+        const totalAmount = parseFloat(document.getElementById('total_amount').value);
+        
         if (!depositAmount || depositAmount < 50) {
             e.preventDefault();
             alert('Jumlah deposit minimum adalah RM 50.00');
+            document.getElementById('deposit_amount').focus();
+            return false;
+        }
+        
+        if (totalAmount && depositAmount > totalAmount) {
+            e.preventDefault();
+            alert('Jumlah deposit tidak boleh melebihi jumlah keseluruhan (RM ' + totalAmount.toFixed(2) + ')');
             document.getElementById('deposit_amount').focus();
             return false;
         }

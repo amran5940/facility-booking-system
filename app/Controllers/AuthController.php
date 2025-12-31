@@ -78,7 +78,7 @@ class AuthController extends BaseController
     public function changePassword()
     {
         if (!session()->has('user')) {
-            return redirect()->to('/login');
+            return redirect()->to('/');
         }
 
         return view('auth/change_password');

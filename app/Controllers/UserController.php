@@ -131,4 +131,43 @@ class UserController extends BaseController
         $statusText = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
         return redirect()->to('/admin/users')->with('success', "Pengguna berjaya {$statusText}");
     }
+
+    public function changePassword($id)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('/admin/users')->with('error', 'Pengguna tidak dijumpai');
+        }
+
+        return view('users/change_password', [
+            'user' => $user
+        ]);
+    }
+
+    public function updatePassword($id)
+    {
+        $userModel = new UserModel();
+        $user = $userModel->find($id);
+
+        if (!$user) {
+            return redirect()->to('/admin/users')->with('error', 'Pengguna tidak dijumpai');
+        }
+
+        $newPassword = (string) $this->request->getPost('new_password');
+        $confirmPassword = (string) $this->request->getPost('confirm_password');
+
+        if ($newPassword !== $confirmPassword) {
+            return redirect()->back()->with('error', 'Kata laluan baharu tidak sepadan');
+        }
+
+        if (strlen($newPassword) < 8) {
+            return redirect()->back()->with('error', 'Kata laluan baharu mesti sekurang-kurangnya 8 aksara');
+        }
+
+        $userModel->update($id, ['password' => password_hash($newPassword, PASSWORD_DEFAULT)]);
+
+        return redirect()->to('/admin/users')->with('success', 'Kata laluan pengguna berjaya ditukar');
+    }
 }

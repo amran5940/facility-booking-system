@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'http://localhost/am/';
+    public string $baseURL = 'http://localhost:8080/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -30,6 +30,15 @@ class App extends BaseConfig
      * @var list<string>
      */
     public array $allowedHostnames = [];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Error View Path
+     * --------------------------------------------------------------------------
+     *
+     * The path to the error views relative to APPPATH . 'Views/'.
+     */
+    public string $errorViewPath = 'errors/html';
 
     /**
      * --------------------------------------------------------------------------

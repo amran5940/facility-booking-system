@@ -27,6 +27,34 @@
                     <?php endforeach; ?>
                 </tbody>
             </table>
+
+            <div class="mt-4">
+                <h5>Medan Lalai Untuk Semua Kategori</h5>
+                <p class="text-muted">Rujukan pantas medan lalai bagi setiap kategori fasiliti.</p>
+                <?php foreach ($allDefaultFields as $categoryName => $fields): ?>
+                    <div class="mb-3">
+                        <div class="fw-bold">Kategori: <?= esc($categoryName) ?></div>
+                        <table class="table table-sm mb-2">
+                            <thead>
+                                <tr>
+                                    <th>Label</th>
+                                    <th>Jenis</th>
+                                    <th>Diperlukan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($fields as $field): ?>
+                                    <tr>
+                                        <td><?= esc($field['field_label']) ?></td>
+                                        <td><?= esc($field['field_type']) ?></td>
+                                        <td><?= $field['required'] ? 'Ya' : 'Tidak' ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
         <div class="col-md-6">
             <h4>Medan Tersuai</h4>

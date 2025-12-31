@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #ffcc00 0%, #ffd84d 100%);">
                     <h4 class="mb-0">
                         <i class="fas fa-calendar-check me-2"></i>Tempahan Saya
                     </h4>
@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <!-- Current Bookings Section -->
                     <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
+                        <div class="card-header text-white" style="background: linear-gradient(135deg, #ffcc00 0%, #ffd84d 100%);">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-calendar-day me-2"></i>Tempahan Semasa & Akan Datang
                                 <?php if (!empty($currentBookings)): ?>
@@ -27,8 +27,8 @@
                                     <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                                     <h5 class="text-muted">Tiada tempahan semasa</h5>
                                     <p class="text-muted">Anda tidak mempunyai tempahan yang sedang berlangsung atau akan datang.</p>
-                                    <a href="/dashboard" class="btn btn-primary">
-                                        <i class="fas fa-plus me-1"></i>Buat Tempahan Baharu
+                                    <a href="/user" class="btn text-white" style="background: linear-gradient(135deg, #ffcc00 0%, #ffd84d 100%); border: none;">
+                                        <i class="fas fa-arrow-left me-1"></i>Kembali ke Papan Pemuka
                                     </a>
                                 </div>
                             <?php else: ?>
@@ -49,7 +49,7 @@
                                             <?php foreach ($currentBookings as $booking): ?>
                                                 <tr>
                                                     <td>
-                                                        <strong class="text-primary"><?= esc($booking['facility_name']) ?></strong>
+                                                        <strong style="color: #2ec8a6;"><?= esc($booking['facility_name']) ?></strong>
                                                         <?php if ($booking['agency_name']): ?>
                                                             <br><small class="text-muted">Agensi: <?= esc($booking['agency_name']) ?></small>
                                                         <?php endif; ?>
@@ -103,7 +103,7 @@
 
                     <!-- Past Bookings Section -->
                     <div class="card">
-                        <div class="card-header bg-secondary text-white">
+                        <div class="card-header text-white" style="background: linear-gradient(135deg, #2ec8a6 0%, #54dcbf 100%);">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-history me-2"></i>Tempahan Lepas
                                 <?php if (!empty($pastBookings)): ?>
@@ -136,7 +136,7 @@
                                             <?php foreach ($pastBookings as $booking): ?>
                                                 <tr class="table-secondary">
                                                     <td>
-                                                        <strong class="text-primary"><?= esc($booking['facility_name']) ?></strong>
+                                                        <strong style="color: #2ec8a6;"><?= esc($booking['facility_name']) ?></strong>
                                                         <?php if ($booking['agency_name']): ?>
                                                             <br><small class="text-muted">Agensi: <?= esc($booking['agency_name']) ?></small>
                                                         <?php endif; ?>

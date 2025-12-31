@@ -13,6 +13,9 @@ $routes->get('/forgot-password', 'AuthController::forgotPassword');
 $routes->post('/forgot-password', 'AuthController::doForgotPassword');
 $routes->get('/logout', 'AuthController::logout');
 
+// Public image serving route
+$routes->get('/images/facility/(:num)', 'ImageController::facilityImage/$1');
+
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
 	$routes->get('/dashboard', 'DashboardController::index');
 	$routes->get('/change-password', 'AuthController::changePassword');
@@ -46,6 +49,8 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 		$routes->post('users/(:num)/update', 'UserController::update/$1');
 		$routes->post('users/(:num)/delete', 'UserController::delete/$1');
 		$routes->post('users/(:num)/toggle-status', 'UserController::toggleStatus/$1');
+		$routes->get('users/(:num)/change-password', 'UserController::changePassword/$1');
+		$routes->post('users/(:num)/change-password', 'UserController::updatePassword/$1');
 		$routes->post('facility-categories', 'AgenciesController::createFacilityCategory');
 		$routes->get('facility-categories', 'AgenciesController::listFacilityCategories');
 		$routes->get('facility-categories/(:num)/edit', 'AgenciesController::editFacilityCategory/$1');
@@ -58,10 +63,19 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 		$routes->get('facilities/(:num)/edit', 'FacilityController::edit/$1');
 		$routes->post('facilities/(:num)/update', 'FacilityController::update/$1');
 		$routes->post('facilities/(:num)/delete', 'FacilityController::delete/$1');
+		$routes->get('facilities/(:num)/images', 'FacilityController::getImages/$1');
+		$routes->post('facilities/images/(:num)/delete', 'FacilityController::deleteImage/$1');
+		$routes->post('facilities/images/(:num)/set-primary', 'FacilityController::setPrimaryImage/$1');
 		$routes->get('bookings', 'BookingController::adminIndex');
 		$routes->post('bookings/(:num)/approve', 'BookingController::approve/$1');
 		$routes->post('bookings/(:num)/reject', 'BookingController::reject/$1');
 		$routes->post('bookings/(:num)/delete', 'BookingController::delete/$1');
+		$routes->get('payment-gateways', 'PaymentGatewayController::index');
+		$routes->get('payment-gateways/create', 'PaymentGatewayController::create');
+		$routes->post('payment-gateways', 'PaymentGatewayController::store');
+		$routes->get('payment-gateways/(:num)/edit', 'PaymentGatewayController::edit/$1');
+		$routes->post('payment-gateways/(:num)', 'PaymentGatewayController::update/$1');
+		$routes->post('payment-gateways/(:num)/delete', 'PaymentGatewayController::delete/$1');
 	});
 
 	$routes->group('manager', ['filter' => 'role:manager'], static function ($routes) {
@@ -69,23 +83,31 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 		$routes->get('facilities', 'FacilityController::index');
 		$routes->get('facilities/create', 'FacilityController::create');
 		$routes->post('facilities', 'FacilityController::store');
+		$routes->get('facilities/(:num)', 'FacilityController::getFacility/$1');
 		$routes->get('facilities/(:num)/edit', 'FacilityController::edit/$1');
 		$routes->post('facilities/(:num)/update', 'FacilityController::update/$1');
 		$routes->post('facilities/(:num)/delete', 'FacilityController::delete/$1');
+		$routes->get('facilities/(:num)/images', 'FacilityController::getImages/$1');
+		$routes->post('facilities/images/(:num)/delete', 'FacilityController::deleteImage/$1');
+		$routes->post('facilities/images/(:num)/set-primary', 'FacilityController::setPrimaryImage/$1');
 		$routes->get('facilities/(:num)/bookings', 'FacilityController::getBookings/$1');
 		$routes->post('facilities/block-dates', 'FacilityController::blockDates');
 		$routes->get('bookings', 'BookingController::managerIndex');
 		$routes->post('unassign', 'DashboardController::unassignManager');
 		$routes->post('bookings/(:num)/approve', 'BookingController::approve/$1');
+		$routes->get('payment-settings', 'PaymentGatewayController::agencySettings');
+		$routes->post('payment-settings', 'PaymentGatewayController::updateAgencySettings');
 		$routes->post('bookings/(:num)/reject', 'BookingController::reject/$1');
 		$routes->post('bookings/(:num)/delete', 'BookingController::delete/$1');
 		$routes->post('assign-user/(:num)', 'DashboardController::assignUserToAgency/$1');
 	});
 
-	$routes->group('user', ['filter' => 'role:user'], static function ($routes) {
-		$routes->get('bookings', 'BookingController::index');
-		$routes->get('bookings/create/(:num)', 'BookingController::create/$1');
-		$routes->post('bookings', 'BookingController::store');
+	$routes->group('user', static function ($routes) {
+		$routes->get('bookings', 'BookingController::index', ['filter' => 'role:user,manager,admin']);
+		$routes->get('bookings/create/(:num)', 'BookingController::create/$1', ['filter' => 'role:user,manager,admin']);
+		$routes->post('bookings', 'BookingController::store', ['filter' => 'role:user,manager,admin']);
+		$routes->get('facilities', 'FacilityController::index', ['filter' => 'role:user,manager,admin']);
+		$routes->get('facilities/(:num)/images', 'FacilityController::getImages/$1', ['filter' => 'role:user,manager,admin']);
 	});
 
 });

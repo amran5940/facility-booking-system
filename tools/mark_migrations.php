@@ -7,6 +7,10 @@ $migrations = [
     ['App', '2025-12-06-011248', 'AddAgencyApplicationFields', 'default'],
     ['App', '2025-12-06-011917', 'AddUserAdditionalFields', 'default'],
     ['App', '2025-12-08-030248', 'DropUsernameFromUsers', 'default'],
+    ['App', '2025-12-10-000001', 'CreateBlockedDatesTable', 'default'],
+    ['App', '2025-12-31-000001', 'CreateFacilityImagesTable', 'default'],
+    ['App', '2025-12-31-000002', 'AddCoordinatesToFacilities', 'default'],
+    ['App', '2025-12-31-165531', 'CreatePaymentGatewaysTable', 'default'],
 ];
 
 $pdo->beginTransaction();

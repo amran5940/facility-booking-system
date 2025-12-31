@@ -175,8 +175,12 @@ class AgenciesController extends BaseController
     {
         $categoryModel = new \App\Models\FacilityCategoryModel();
         $categories = $categoryModel->findAll();
+        $defaultFieldSets = array_keys($categoryModel->getAllDefaultFields());
 
-        return view('facility_categories/index', ['facility_categories' => $categories]);
+        return view('facility_categories/index', [
+            'facility_categories' => $categories,
+            'default_field_sets' => $defaultFieldSets,
+        ]);
     }
 
     public function createFacilityCategory()
@@ -188,8 +192,28 @@ class AgenciesController extends BaseController
         ];
 
         $facilityCategoryModel = new \App\Models\FacilityCategoryModel();
-        if ($facilityCategoryModel->insert($data) === false) {
+        $fieldModel = new \App\Models\FacilityCategoryFieldModel();
+        $selectedDefaultSet = (string) $this->request->getPost('default_field_set');
+
+        $categoryId = $facilityCategoryModel->insert($data);
+        if ($categoryId === false) {
             return redirect()->back()->withInput()->with('errors', $facilityCategoryModel->errors());
+        }
+
+        // If a default field set was chosen, seed those fields into the new category.
+        if ($selectedDefaultSet !== '') {
+            $defaultFields = $facilityCategoryModel->getDefaultFields($selectedDefaultSet);
+            foreach ($defaultFields as $index => $field) {
+                $fieldModel->insert([
+                    'category_id' => (int) $categoryId,
+                    'field_name' => $field['field_name'],
+                    'field_label' => $field['field_label'],
+                    'field_type' => $field['field_type'],
+                    'options' => isset($field['options']) ? json_encode($field['options']) : null,
+                    'required' => $field['required'] ? 1 : 0,
+                    'sort_order' => $index * 10,
+                ]);
+            }
         }
 
         return redirect()->back()->with('success', 'Facility category created successfully');
@@ -246,11 +270,13 @@ class AgenciesController extends BaseController
         
         $customFields = $fieldModel->where('category_id', $categoryId)->orderBy('sort_order')->findAll();
         $defaultFields = $facilityCategoryModel->getDefaultFields($category['name']);
+        $allDefaultFields = $facilityCategoryModel->getAllDefaultFields();
         
         return view('facility_categories/fields', [
             'category' => $category, 
             'customFields' => $customFields,
-            'defaultFields' => $defaultFields
+            'defaultFields' => $defaultFields,
+            'allDefaultFields' => $allDefaultFields,
         ]);
     }
 

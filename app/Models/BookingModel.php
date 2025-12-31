@@ -30,9 +30,13 @@ class BookingModel extends Model
         'end_date' => 'required|valid_date',
         'status' => 'required|in_list[pending,approved,cancelled]',
         'notes' => 'permit_empty|max_length[500]',
-        'payment_gateway' => 'required|in_list[online_banking,credit_card,debit_card,cash]',
+        'payment_gateway' => 'required|max_length[50]|valid_payment_gateway',
         'deposit_amount' => 'required|numeric|greater_than[0]',
         'payment_status' => 'required|in_list[pending,paid,refunded]',
         'total_amount' => 'permit_empty|numeric|greater_than[0]',
+    ];
+
+    protected $customValidationRules = [
+        'valid_payment_gateway' => 'App\Validation\PaymentGatewayValidator::validate'
     ];
 }

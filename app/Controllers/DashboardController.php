@@ -173,6 +173,7 @@ class DashboardController extends BaseController
 
         // Facilities grouped for display
         $agencyFacilities = [];
+        $imageModel = new \App\Models\FacilityImageModel();
 
         if (($user['user_type'] ?? '') === 'agency') {
             // Agency user: show all facilities (public + agency) from all agencies
@@ -182,6 +183,16 @@ class DashboardController extends BaseController
                     ->where('facilities.agency_id', $agency['id'])
                     ->where('facilities.status', 'active')
                     ->findAll();
+                
+                // Get primary image and image count for each facility
+                foreach ($facilities as &$facility) {
+                    $primaryImage = $imageModel->where('facility_id', $facility['id'])
+                                               ->where('is_primary', 1)
+                                               ->first();
+                    $facility['primary_image'] = $primaryImage;
+                    $facility['image_count'] = $imageModel->where('facility_id', $facility['id'])->countAllResults();
+                }
+                
                 if (!empty($facilities)) {
                     $agencyFacilities[] = [
                         'agency' => $agency,
@@ -201,6 +212,15 @@ class DashboardController extends BaseController
                 ->where('facilities.type', 'public')
                 ->where('facilities.status', 'active')
                 ->findAll();
+
+            // Get primary image and image count for each public facility
+            foreach ($publicFacilities as &$facility) {
+                $primaryImage = $imageModel->where('facility_id', $facility['id'])
+                                           ->where('is_primary', 1)
+                                           ->first();
+                $facility['primary_image'] = $primaryImage;
+                $facility['image_count'] = $imageModel->where('facility_id', $facility['id'])->countAllResults();
+            }
 
             // Group public facilities by offering agency (if any)
             foreach ($publicFacilities as $facility) {
@@ -225,6 +245,16 @@ class DashboardController extends BaseController
                 ->where('facilities.type', 'agency')
                 ->where('facilities.status', 'active')
                 ->findAll();
+            
+            // Get primary image and image count for user agency facilities
+            foreach ($userAgencyFacilities as &$facility) {
+                $primaryImage = $imageModel->where('facility_id', $facility['id'])
+                                           ->where('is_primary', 1)
+                                           ->first();
+                $facility['primary_image'] = $primaryImage;
+                $facility['image_count'] = $imageModel->where('facility_id', $facility['id'])->countAllResults();
+            }
+            
             $publicFacilities = array_merge($publicFacilities, $userAgencyFacilities);
         }
 

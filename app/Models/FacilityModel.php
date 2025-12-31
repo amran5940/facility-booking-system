@@ -19,6 +19,11 @@ class FacilityModel extends Model
         'status',
         'capacity',
         'location',
+        'latitude',
+        'longitude',
+        'pricing_type',
+        'price_per_hour',
+        'price_per_day',
         'created_by',
     ];
     protected $useTimestamps = true;
@@ -31,6 +36,11 @@ class FacilityModel extends Model
         'status' => 'required|in_list[active,inactive]',
         'capacity' => 'permit_empty|integer',
         'location' => 'permit_empty|max_length[255]',
+        'latitude' => 'permit_empty|decimal',
+        'longitude' => 'permit_empty|decimal',
+        'pricing_type' => 'permit_empty|in_list[hourly,daily]',
+        'price_per_hour' => 'permit_empty|decimal',
+        'price_per_day' => 'permit_empty|decimal',
         'created_by' => 'required|integer',
     ];
 }

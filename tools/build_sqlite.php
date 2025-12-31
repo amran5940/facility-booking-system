@@ -84,6 +84,8 @@ $schema = [
         status TEXT NOT NULL DEFAULT 'active',
         capacity INTEGER,
         location TEXT,
+        latitude REAL,
+        longitude REAL,
         created_by INTEGER NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -101,6 +103,18 @@ $schema = [
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE,
         FOREIGN KEY (field_id) REFERENCES facility_category_fields(id) ON DELETE CASCADE
+    );",
+    // Facility Images
+    "CREATE TABLE facility_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        facility_id INTEGER NOT NULL,
+        image_data BLOB NOT NULL,
+        image_type TEXT NOT NULL,
+        is_primary INTEGER DEFAULT 0,
+        sort_order INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE
     );",
     // Bookings
     "CREATE TABLE bookings (

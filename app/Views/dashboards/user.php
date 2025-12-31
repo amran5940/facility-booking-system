@@ -208,6 +208,26 @@
         text-align: center;
     }
 
+    .facility-image-container {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+
+    .facility-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .facility-card:hover .facility-image {
+        transform: scale(1.05);
+    }
+
     .facility-icon {
         width: 60px;
         height: 60px;
@@ -465,23 +485,51 @@
                         <?php foreach ($agencyData['facilities'] as $facility): ?>
                             <div class="facility-card">
                                 <div class="card-body">
-                                    <div class="facility-icon">
-                                        <i class="fas fa-building"></i>
-                                    </div>
+                                    <?php if (!empty($facility['primary_image'])): ?>
+                                        <div class="facility-image-container" style="position: relative; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" 
+                                                 alt="<?= esc($facility['name']) ?>" 
+                                                 class="facility-image">
+                                            <?php if ($facility['image_count'] > 1): ?>
+                                            <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.4rem 0.7rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                                +<?= $facility['image_count'] - 1 ?> <i class="fas fa-images"></i>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="facility-icon">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                    <?php endif; ?>
                                     <h5 class="facility-name"><?= esc($facility['name']) ?></h5>
                                     <span class="facility-type">
                                         <i class="fas fa-tag me-1"></i>
                                         <?= esc($facility['category_name'] ?? 'Fasiliti') ?>
                                     </span>
-                                    <br>
-                                    <span class="agency-badge">
-                                        <i class="fas fa-university me-1"></i>
-                                        <?= esc($agencyData['agency']['name']) ?>
-                                    </span>
-                                    <br>
+                                    <?php if (isset($facility['pricing_type']) && $facility['pricing_type']): ?>
+                                        <div class="mt-2 mb-2" style="background: rgba(255, 204, 0, 0.1); padding: 0.5rem; border-radius: 6px;">
+                                            <i class="fas fa-money-bill-wave" style="color: #ffcc00;"></i>
+                                            <strong style="color: #8a6b00;">
+                                                <?php if ($facility['pricing_type'] === 'hourly'): ?>
+                                                    RM <?= number_format($facility['price_per_hour'], 2) ?> / jam
+                                                <?php else: ?>
+                                                    RM <?= number_format($facility['price_per_day'], 2) ?> / hari
+                                                <?php endif; ?>
+                                            </strong>
+                                        </div>
+                                    <?php endif; ?>
                                     <p class="facility-description small text-muted mb-3">
                                         <?= esc($facility['description'] ?: 'Tiada penerangan tambahan.') ?>
                                     </p>
+                                    <?php if (!empty($facility['latitude']) && !empty($facility['longitude'])): ?>
+                                        <div class="text-center mb-3">
+                                            <button onclick="showFacilityLocation(<?= $facility['latitude'] ?>, <?= $facility['longitude'] ?>, '<?= esc($facility['name'], 'js') ?>')"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    style="border-radius: 20px; padding: 0.4rem 1rem;">
+                                                <i class="fas fa-map-marker-alt me-1"></i> Lokasi
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
                                     <a href="/user/bookings/create/<?= $facility['id'] ?>" class="book-btn">
                                         <i class="fas fa-calendar-plus me-2"></i>Tempah Sekarang
                                     </a>
@@ -511,23 +559,51 @@
                         <?php foreach ($agencyData['facilities'] as $facility): ?>
                             <div class="facility-card">
                                 <div class="card-body">
-                                    <div class="facility-icon">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
+                                    <?php if (!empty($facility['primary_image'])): ?>
+                                        <div class="facility-image-container" style="position: relative; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" 
+                                                 alt="<?= esc($facility['name']) ?>" 
+                                                 class="facility-image">
+                                            <?php if ($facility['image_count'] > 1): ?>
+                                            <div style="position: absolute; bottom: 0.5rem; right: 0.5rem; background: rgba(0,0,0,0.7); color: white; padding: 0.4rem 0.7rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">
+                                                +<?= $facility['image_count'] - 1 ?> <i class="fas fa-images"></i>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="facility-icon">
+                                            <i class="fas fa-globe"></i>
+                                        </div>
+                                    <?php endif; ?>
                                     <h5 class="facility-name"><?= esc($facility['name']) ?></h5>
                                     <span class="facility-type">
                                         <i class="fas fa-tag me-1"></i>
                                         <?= esc($facility['category_name'] ?? 'Fasiliti Awam') ?>
                                     </span>
-                                    <br>
-                                    <span class="agency-badge">
-                                        <i class="fas fa-university me-1"></i>
-                                        <?= esc($agencyData['agency']['name'] ?? 'Umum') ?>
-                                    </span>
-                                    <br>
+                                    <?php if (isset($facility['pricing_type']) && $facility['pricing_type']): ?>
+                                        <div class="mt-2 mb-2" style="background: rgba(255, 204, 0, 0.1); padding: 0.5rem; border-radius: 6px;">
+                                            <i class="fas fa-money-bill-wave" style="color: #ffcc00;"></i>
+                                            <strong style="color: #8a6b00;">
+                                                <?php if ($facility['pricing_type'] === 'hourly'): ?>
+                                                    RM <?= number_format($facility['price_per_hour'], 2) ?> / jam
+                                                <?php else: ?>
+                                                    RM <?= number_format($facility['price_per_day'], 2) ?> / hari
+                                                <?php endif; ?>
+                                            </strong>
+                                        </div>
+                                    <?php endif; ?>
                                     <p class="facility-description small text-muted mb-3">
                                         <?= esc($facility['description'] ?: 'Tiada penerangan tambahan.') ?>
                                     </p>
+                                    <?php if (!empty($facility['latitude']) && !empty($facility['longitude'])): ?>
+                                        <div class="text-center mb-3">
+                                            <button onclick="showFacilityLocation(<?= $facility['latitude'] ?>, <?= $facility['longitude'] ?>, '<?= esc($facility['name'], 'js') ?>')"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    style="border-radius: 20px; padding: 0.4rem 1rem;">
+                                                <i class="fas fa-map-marker-alt me-1"></i> Lokasi
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
                                     <a href="/user/bookings/create/<?= $facility['id'] ?>" class="book-btn">
                                         <i class="fas fa-calendar-plus me-2"></i>Tempah Sekarang
                                     </a>
@@ -666,6 +742,68 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.boxShadow = 'none';
         });
     });
+    
+    // Function to view all facility images in modal
+    window.viewFacilityImages = function(facilityId, facilityName) {
+        fetch(`/user/facilities/${facilityId}/images`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.images && data.images.length > 0) {
+                    let imagesHtml = '<div class="d-flex gap-3" style="overflow-x: auto; padding: 1rem 0;">';
+                    data.images.forEach(img => {
+                        imagesHtml += `
+                            <div style="flex-shrink: 0;">
+                                <img src="/images/facility/${img.id}" alt="Gambar Fasiliti" style="width: 250px; height: 200px; object-fit: cover; border-radius: 8px; border: ${img.is_primary ? '3px solid #ffcc00' : 'none'}">
+                                ${img.is_primary ? '<div style="text-align: center; margin-top: 0.5rem; font-weight: 600; color: #ffcc00;"><i class="fas fa-star me-1"></i>Utama</div>' : ''}
+                            </div>
+                        `;
+                    });
+                    imagesHtml += '</div>';
+                    
+                    Swal.fire({
+                        title: `Gambar - ${facilityName}`,
+                        html: imagesHtml,
+                        width: '90%',
+                        confirmButtonText: 'Tutup',
+                        confirmButtonColor: '#ffcc00'
+                    });
+                } else {
+                    Swal.fire('Tiada Gambar', 'Fasiliti ini belum mempunyai gambar.', 'info');
+                }
+            });
+    };
+    
+    // Function to show facility location on map
+    window.showFacilityLocation = function(lat, lng, facilityName) {
+        Swal.fire({
+            title: `Lokasi - ${facilityName}`,
+            html: `
+                <div id="facilityMapModal" style="width: 100%; height: 400px; border-radius: 8px;"></div>
+                <div class="d-flex justify-content-center mt-3">
+                    <a id="gmapsDirectionBtn" href="#" target="_blank" class="btn btn-primary" style="border-radius: 20px; padding: 0.4rem 1.2rem;">
+                        <i class="fas fa-directions me-1"></i> Ke Lokasi
+                    </a>
+                </div>
+            `,
+            width: '800px',
+            confirmButtonText: 'Tutup',
+            confirmButtonColor: '#1e90ff',
+            didOpen: () => {
+                // Initialize map
+                const map = L.map('facilityMapModal').setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                    maxZoom: 19
+                }).addTo(map);
+                L.marker([lat, lng]).addTo(map)
+                    .bindPopup(`<b>${facilityName}</b><br><span style='font-size:0.85rem;color:#666;'>Lokasi Fasiliti</span>`)
+                    .openPopup();
+                // Set Google Maps direction link
+                const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+                document.getElementById('gmapsDirectionBtn').setAttribute('href', gmapsUrl);
+            }
+        });
+    };
 });
 </script>
 

@@ -83,9 +83,26 @@ class BookingController extends BaseController
             return redirect()->to('/user')->with('error', 'Facility not found');
         }
 
-        // Access control: public users can only book public facilities; agency users can book their own agency facilities and public facilities
+        // Access control: 
+        // - Public users can only book public facilities
+        // - Agency users can book their own agency facilities and public facilities
+        // - Managers can book facilities from their agency and public facilities
+        // - Admins can book any facility
         if ($facility['type'] === 'agency') {
-            if (!isset($user['user_type']) || $user['user_type'] !== 'agency' || $facility['agency_id'] != $user['agency_id']) {
+            if ($user['role'] === 'admin') {
+                // Admins can book any facility
+            } elseif ($user['role'] === 'manager') {
+                // Managers can only book facilities from their agency
+                if ($facility['agency_id'] != $user['agency_id']) {
+                    return redirect()->to('/user')->with('error', 'Access denied');
+                }
+            } elseif ($user['user_type'] === 'agency') {
+                // Agency users can only book facilities from their agency
+                if ($facility['agency_id'] != $user['agency_id']) {
+                    return redirect()->to('/user')->with('error', 'Access denied');
+                }
+            } else {
+                // Public users cannot book agency facilities
                 return redirect()->to('/user')->with('error', 'Access denied');
             }
         }
@@ -98,10 +115,15 @@ class BookingController extends BaseController
         $existingBookings = $bookingModel->where('facility_id', $facilityId)
                                          ->findAll();
 
+        // Get active payment gateways
+        $paymentGatewayModel = new \App\Models\PaymentGatewayModel();
+        $paymentGateways = $paymentGatewayModel->where('is_active', 1)->findAll();
+
         return view('bookings/create', [
             'facility' => $facility,
             'category' => $category,
-            'existingBookings' => $existingBookings
+            'existingBookings' => $existingBookings,
+            'paymentGateways' => $paymentGateways
         ]);
     }
 
@@ -118,8 +140,23 @@ class BookingController extends BaseController
         }
 
         // Check access
-        if ($facility['type'] === 'agency' && ($user['user_type'] !== 'agency' || $facility['agency_id'] != $user['agency_id'])) {
-            return redirect()->to('/user')->with('error', 'Access denied');
+        if ($facility['type'] === 'agency') {
+            if ($user['role'] === 'admin') {
+                // Admins can book any facility
+            } elseif ($user['role'] === 'manager') {
+                // Managers can only book facilities from their agency
+                if ($facility['agency_id'] != $user['agency_id']) {
+                    return redirect()->to('/user')->with('error', 'Access denied');
+                }
+            } elseif ($user['user_type'] === 'agency') {
+                // Agency users can only book facilities from their agency
+                if ($facility['agency_id'] != $user['agency_id']) {
+                    return redirect()->to('/user')->with('error', 'Access denied');
+                }
+            } else {
+                // Public users cannot book agency facilities
+                return redirect()->to('/user')->with('error', 'Access denied');
+            }
         }
 
         $data = [

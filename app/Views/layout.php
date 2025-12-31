@@ -8,12 +8,26 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #ffcc00 0%, #ffd84d 100%);
             --success-gradient: linear-gradient(135deg, #2ec8a6 0%, #54dcbf 100%);
             --user-gradient: linear-gradient(135deg, #f1fbf6 0%, #f1fbf6 100%);
             --navbar-bg: #ffffff;
+            
+            /* Typography Scale */
+            --fs-body: 0.875rem;    /* 14px */
+            --fs-small: 0.8125rem;  /* 13px */
+            --fs-input: 0.875rem;   /* 14px */
+            --fs-h1: 1.25rem;       /* 20px */
+            --fs-h2: 1.125rem;      /* 18px */
+            --fs-h3: 1rem;          /* 16px */
+            --lh-tight: 1.3;
+            --lh-normal: 1.5;
+            --lh-relaxed: 1.6;
         }
 
         body {
@@ -21,7 +35,33 @@
             background: #f1fbf6;
             min-height: 100vh;
             color: #0b0c0f;
+            font-size: var(--fs-body);
+            line-height: var(--lh-normal);
         }
+        
+        h1, .h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); font-weight: 600; }
+        h2, .h2 { font-size: var(--fs-h2); line-height: var(--lh-tight); font-weight: 600; }
+        h3, .h3 { font-size: var(--fs-h3); line-height: var(--lh-tight); font-weight: 600; }
+        
+        .small, small { font-size: var(--fs-small); }
+        
+        .btn { font-size: var(--fs-input); line-height: 1.2; padding: 0.5rem 1rem; }
+        .btn-sm { font-size: var(--fs-small); padding: 0.4rem 0.8rem; }
+        .btn-lg { font-size: var(--fs-body); padding: 0.6rem 1.2rem; }
+        
+        input, select, textarea, .form-control, .form-select {
+            font-size: var(--fs-input);
+            line-height: 1.4;
+        }
+        
+        label, .form-label { font-size: var(--fs-small); font-weight: 500; }
+        
+        .table { font-size: var(--fs-small); }
+        .table th { font-size: var(--fs-input); font-weight: 600; }
+        .table td { line-height: 1.5; }
+        
+        .card-title { font-size: var(--fs-h3); font-weight: 600; }
+        .card-text { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
 
         .navbar-custom {
             background: var(--navbar-bg) !important;

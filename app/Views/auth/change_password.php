@@ -15,6 +15,17 @@
             --soft-green-gradient: linear-gradient(135deg, #a8edec 0%, #fed6e3 100%);
             --card-shadow: 0 10px 30px rgba(0,0,0,0.1);
             --card-shadow-hover: 0 20px 40px rgba(0,0,0,0.15);
+            
+            /* Typography Scale */
+            --fs-body: 0.875rem;
+            --fs-small: 0.8125rem;
+            --fs-input: 0.875rem;
+            --fs-h1: 1.25rem;
+            --fs-h2: 1.125rem;
+            --fs-h3: 1rem;
+            --lh-tight: 1.3;
+            --lh-normal: 1.5;
+            --lh-relaxed: 1.6;
         }
 
         body {
@@ -26,7 +37,20 @@
             justify-content: center;
             margin: 0;
             padding: 20px;
+            font-size: var(--fs-body);
+            line-height: var(--lh-normal);
         }
+        
+        h1, .h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); font-weight: 600; }
+        h2, .h2 { font-size: var(--fs-h2); line-height: var(--lh-tight); font-weight: 600; }
+        h3, .h3 { font-size: var(--fs-h3); line-height: var(--lh-tight); font-weight: 600; }
+        h4, .h4 { font-size: var(--fs-h3); line-height: var(--lh-tight); font-weight: 600; }
+        
+        .small, small { font-size: var(--fs-small); }
+        
+        .btn { font-size: var(--fs-input); line-height: 1.2; }
+        input, select, textarea, .form-control { font-size: var(--fs-input); line-height: 1.4; }
+        label, .form-label { font-size: var(--fs-small); font-weight: 500; }
 
         .change-password-container {
             max-width: 500px;
@@ -53,13 +77,13 @@
         .card-header h4 {
             margin: 0;
             font-weight: 700;
-            font-size: 1.5rem;
+            font-size: var(--fs-h1);
         }
 
         .card-header p {
             margin: 0.5rem 0 0 0;
             opacity: 0.9;
-            font-size: 0.9rem;
+            font-size: var(--fs-small);
         }
 
         .card-body {
@@ -77,7 +101,7 @@
             border-radius: 12px;
             padding: 0.875rem 1rem;
             transition: all 0.3s ease;
-            font-size: 1rem;
+            font-size: var(--fs-input);
         }
 
         .form-control:focus {
@@ -103,7 +127,7 @@
             border-radius: 25px;
             padding: 0.75rem 2rem;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: var(--fs-input);
             transition: all 0.3s ease;
             box-shadow: 0 10px 24px rgba(102, 126, 234, 0.35);
         }
@@ -127,7 +151,7 @@
         }
 
         .text-muted {
-            font-size: 0.85rem;
+            font-size: var(--fs-small);
         }
 
         .back-link {

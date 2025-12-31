@@ -1,13 +1,22 @@
 <?php
-// Build a fresh MySQL database for the CI4 app.
-// Usage: php tools/build_mysql.php
+// Migrate data from SQLite to MySQL while keeping the schema aligned.
+// Usage: php tools/migrate_sqlite_to_mysql.php
 
 declare(strict_types=1);
 
-$pdo = new PDO('mysql:host=localhost;dbname=am;charset=utf8mb4', 'root', '');
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sqlitePath = 'C:\\xampp\\htdocs\\am\\writable\\database\\database.sqlite';
+$mysqlDsn   = 'mysql:host=localhost;dbname=am;charset=utf8mb4';
+$mysqlUser  = 'root';
+$mysqlPass  = '';
 
-// Schema aligned with the existing SQLite structure so migrations match field-for-field.
+$sqlite = new PDO("sqlite:$sqlitePath");
+$sqlite->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sqlite->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+$mysql = new PDO($mysqlDsn, $mysqlUser, $mysqlPass);
+$mysql->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// Recreate schema to match SQLite exactly.
 $schema = [
     "SET FOREIGN_KEY_CHECKS = 0;",
     "DROP TABLE IF EXISTS blocked_dates;",
@@ -20,7 +29,6 @@ $schema = [
     "DROP TABLE IF EXISTS agencies;",
     "DROP TABLE IF EXISTS migrations;",
     "SET FOREIGN_KEY_CHECKS = 1;",
-    // Migrations tracker
     "CREATE TABLE migrations (
         id INT AUTO_INCREMENT PRIMARY KEY,
         version VARCHAR(255) NOT NULL,
@@ -30,7 +38,6 @@ $schema = [
         time INT NOT NULL,
         batch INT NOT NULL
     ) ENGINE=InnoDB;",
-    // Agencies
     "CREATE TABLE agencies (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL UNIQUE,
@@ -40,7 +47,6 @@ $schema = [
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB;",
-    // Users
     "CREATE TABLE users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(100) NOT NULL UNIQUE,
@@ -64,7 +70,6 @@ $schema = [
         FOREIGN KEY (agency_id) REFERENCES agencies(id) ON DELETE SET NULL,
         FOREIGN KEY (requested_agency_id) REFERENCES agencies(id) ON DELETE SET NULL
     ) ENGINE=InnoDB;",
-    // Facility Categories
     "CREATE TABLE facility_categories (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL UNIQUE,
@@ -74,7 +79,6 @@ $schema = [
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (created_by) REFERENCES users(id)
     ) ENGINE=InnoDB;",
-    // Facility Category Fields
     "CREATE TABLE facility_category_fields (
         id INT AUTO_INCREMENT PRIMARY KEY,
         category_id INT NOT NULL,
@@ -88,7 +92,6 @@ $schema = [
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (category_id) REFERENCES facility_categories(id) ON DELETE CASCADE
     ) ENGINE=InnoDB;",
-    // Facilities
     "CREATE TABLE facilities (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -99,8 +102,6 @@ $schema = [
         status VARCHAR(20) NOT NULL DEFAULT 'active',
         capacity INT,
         location VARCHAR(255),
-        latitude DECIMAL(10, 8),
-        longitude DECIMAL(11, 8),
         created_by INT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -108,7 +109,6 @@ $schema = [
         FOREIGN KEY (agency_id) REFERENCES agencies(id),
         FOREIGN KEY (created_by) REFERENCES users(id)
     ) ENGINE=InnoDB;",
-    // Facility Custom Values
     "CREATE TABLE facility_custom_values (
         id INT AUTO_INCREMENT PRIMARY KEY,
         facility_id INT NOT NULL,
@@ -119,19 +119,6 @@ $schema = [
         FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE,
         FOREIGN KEY (field_id) REFERENCES facility_category_fields(id) ON DELETE CASCADE
     ) ENGINE=InnoDB;",
-    // Facility Images
-    "CREATE TABLE facility_images (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        facility_id INT NOT NULL,
-        image_data LONGBLOB NOT NULL,
-        image_type VARCHAR(50) NOT NULL,
-        is_primary TINYINT(1) DEFAULT 0,
-        sort_order INT DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (facility_id) REFERENCES facilities(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB;",
-    // Bookings
     "CREATE TABLE bookings (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -145,7 +132,6 @@ $schema = [
         FOREIGN KEY (user_id) REFERENCES users(id),
         FOREIGN KEY (facility_id) REFERENCES facilities(id)
     ) ENGINE=InnoDB;",
-    // Blocked Dates
     "CREATE TABLE blocked_dates (
         id INT AUTO_INCREMENT PRIMARY KEY,
         facility_id INT NOT NULL,
@@ -161,29 +147,42 @@ $schema = [
 ];
 
 foreach ($schema as $sql) {
-    $pdo->exec($sql);
+    $mysql->exec($sql);
 }
 
-// Seed data (minimal defaults to allow logins; adjust as needed)
-$pdo->beginTransaction();
-$pdo->prepare('INSERT INTO agencies (name, code, description) VALUES (?,?,?)')
-    ->execute(['Contoh Agensi', 'AGY001', 'Agensi contoh untuk demo']);
-$agencyId = $pdo->lastInsertId();
+$tables = [
+    'migrations' => ['id', 'version', 'class', 'group', 'namespace', 'time', 'batch'],
+    'agencies' => ['id', 'name', 'code', 'description', 'status', 'created_at', 'updated_at'],
+    'users' => ['id', 'username', 'email', 'password', 'full_name', 'phone', 'date_of_birth', 'address', 'gender', 'role', 'agency_id', 'user_type', 'approved', 'agency_application_status', 'requested_agency_id', 'application_notes', 'status', 'created_at', 'updated_at'],
+    'facility_categories' => ['id', 'name', 'description', 'created_by', 'created_at', 'updated_at'],
+    'facility_category_fields' => ['id', 'category_id', 'field_name', 'field_label', 'field_type', 'options', 'required', 'sort_order', 'created_at', 'updated_at'],
+    'facilities' => ['id', 'name', 'description', 'category_id', 'agency_id', 'type', 'status', 'capacity', 'location', 'created_by', 'created_at', 'updated_at'],
+    'facility_custom_values' => ['id', 'facility_id', 'field_id', 'field_value', 'created_at', 'updated_at'],
+    'bookings' => ['id', 'user_id', 'facility_id', 'start_date', 'end_date', 'status', 'notes', 'created_at', 'updated_at'],
+    'blocked_dates' => ['id', 'facility_id', 'blocked_date', 'reason', 'created_by', 'created_at', 'updated_at'],
+];
 
-$insertUser = $pdo->prepare('INSERT INTO users (username, email, password, full_name, role, agency_id, user_type, approved, agency_application_status, status) VALUES (?,?,?,?,?,?,?,?,?,?)');
-$insertUser->execute(['admin', 'admin@example.com', password_hash('password', PASSWORD_BCRYPT), 'Pentadbir Sistem', 'admin', null, 'public', 1, 'none', 'active']);
-$insertUser->execute(['manager', 'manager@example.com', password_hash('password', PASSWORD_BCRYPT), 'Pengurus Agensi', 'manager', $agencyId, 'agency', 1, 'none', 'active']);
-$insertUser->execute(['user', 'user@example.com', password_hash('password', PASSWORD_BCRYPT), 'Pengguna Biasa', 'user', null, 'public', 1, 'none', 'active']);
+$mysql->beginTransaction();
 
-$pdo->prepare('INSERT INTO facility_categories (name, description, created_by) VALUES (?,?,?)')
-    ->execute(['Hall', 'Meeting halls and auditoriums', 1]);
-$pdo->prepare('INSERT INTO facility_categories (name, description, created_by) VALUES (?,?,?)')
-    ->execute(['Hostel', 'Accommodation facilities', 1]);
-$pdo->prepare('INSERT INTO facility_categories (name, description, created_by) VALUES (?,?,?)')
-    ->execute(['Court', 'Sports courts', 1]);
-$pdo->prepare('INSERT INTO facility_categories (name, description, created_by) VALUES (?,?,?)')
-    ->execute(['Vehicle', 'Transportation vehicles', 1]);
+foreach ($tables as $table => $columns) {
+    $colList = implode(',', array_map(fn($c) => "`$c`", $columns));
+    $placeholders = ':' . implode(',:', $columns);
+    $insert = $mysql->prepare("INSERT INTO `$table` ($colList) VALUES ($placeholders)");
 
-$pdo->commit();
+    $rows = $sqlite->query('SELECT ' . implode(',', array_map(fn($c) => "`$c`", $columns)) . " FROM `$table`");
+    foreach ($rows as $row) {
+        foreach ($columns as $col) {
+            $value = $row[$col];
+            if ($value === null) {
+                $insert->bindValue(":" . $col, null, PDO::PARAM_NULL);
+            } else {
+                $insert->bindValue(":" . $col, $value);
+            }
+        }
+        $insert->execute();
+    }
+}
 
-echo "MySQL DB built in database 'am'\n";
+$mysql->commit();
+
+echo "Data migrated from SQLite to MySQL.\n";

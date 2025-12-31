@@ -1,4 +1,8 @@
-<?= $this->extend('manager_layout') ?>
+<?php
+$user = $user ?? session('user');
+$layout = ($user['role'] === 'manager') ? 'manager_layout' : 'layout';
+?>
+<?= $this->extend($layout) ?>
 <?= $this->section('content') ?>
 
 <style>
@@ -361,13 +365,45 @@
         animation: fadeInUp 0.6s ease-out forwards;
     }
 
-    .stagger-animation > *:nth-child(1) { animation-delay: 0.1s; }
-    .stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
-    .stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
-    .stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
-    .stagger-animation > *:nth-child(5) { animation-delay: 0.5s; }
-    .stagger-animation > *:nth-child(6) { animation-delay: 0.6s; }
-    .stagger-animation > *:nth-child(n+7) { animation-delay: 0.7s; }
+    .agency-toggle {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0,0,0,0.05);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .agency-toggle .form-check-input {
+        width: 2.5rem;
+        height: 1.25rem;
+        border-radius: 1.25rem;
+        background: #e9ecef;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .agency-toggle .form-check-input:checked {
+        background: var(--primary-gradient);
+    }
+
+    .agency-toggle .form-check-input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .agency-toggle .form-check-label {
+        font-weight: 600;
+        color: #495057;
+        cursor: pointer;
+    }
+
+    .agency-toggle small {
+        color: #6c757d;
+        font-size: 0.85rem;
+    }
 
     @media (max-width: 768px) {
         .facilities-grid {
@@ -392,28 +428,141 @@
             max-width: 100%;
         }
     }
+
+    /* Collapsible Sections */
+    .facilities-section {
+        margin-bottom: 3rem;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem 2rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--card-shadow);
+        border: 1px solid rgba(0,0,0,0.05);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .section-header:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .facility-count {
+        background: var(--primary-gradient);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+
+    .btn-toggle {
+        background: none;
+        border: none;
+        color: #667eea;
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+    }
+
+    .btn-toggle:hover {
+        background: rgba(102, 126, 234, 0.1);
+        transform: scale(1.1);
+    }
+
+    .btn-toggle.collapsed .fas {
+        transform: rotate(180deg);
+    }
+
+    .section-content {
+        overflow: hidden;
+        transition: all 0.3s ease;
+        max-height: 5000px;
+        opacity: 1;
+    }
+
+    .section-content.collapsed {
+        max-height: 0;
+        opacity: 0;
+        margin-top: 0;
+    }
+
+    .facility-agency {
+        background: rgba(255, 193, 7, 0.1);
+        color: #856404;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
 </style>
 
 <div class="container">
     <!-- Header Section -->
     <div class="facilities-header fade-in-up">
-        <h1><i class="fas fa-building me-3"></i>Pengurusan Fasiliti</h1>
-        <p>Urus dan pantau semua fasiliti agensi anda</p>
+        <?php if ($user['role'] === 'manager'): ?>
+            <h1><i class="fas fa-building me-3"></i>Pengurusan Fasiliti</h1>
+            <p>Urus dan pantau semua fasiliti agensi anda</p>
+        <?php else: ?>
+            <h1><i class="fas fa-search me-3"></i>Semua Fasiliti</h1>
+            <p>Cari dan tempah fasiliti yang tersedia</p>
+        <?php endif; ?>
     </div>
 
     <!-- Action Bar -->
     <div class="action-bar fade-in-up">
-        <a href="/manager/facilities/create" class="btn-add-facility">
-            <i class="fas fa-plus-circle"></i>
-            Tambah Fasiliti Baharu
-        </a>
+        <?php if ($user['role'] === 'manager'): ?>
+            <a href="/manager/facilities/create" class="btn-add-facility">
+                <i class="fas fa-plus-circle"></i>
+                Tambah Fasiliti Baharu
+            </a>
+        <?php endif; ?>
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="searchInput" placeholder="Cari fasiliti...">
         </div>
     </div>
 
-    <!-- Alert Messages -->
+    <?php if ($user['role'] === 'user'): ?>
+    <!-- Agency Facilities Toggle -->
+    <div class="agency-toggle fade-in-up">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="showAgencyFacilities" checked>
+            <label class="form-check-label" for="showAgencyFacilities">
+                <i class="fas fa-building me-1"></i>
+                Tunjukkan Fasiliti Agensi
+            </label>
+        </div>
+        <small class="text-muted">Sembunyikan/tunjukkan fasiliti yang disediakan oleh agensi</small>
+    </div>
+    <?php endif; ?>
     <?php if (session('success')): ?>
         <div class="alert alert-success alert-dismissible fade show fade-in-up" role="alert">
             <i class="fas fa-check-circle me-2"></i><?= session('success') ?>
@@ -427,165 +576,294 @@
         </div>
     <?php endif; ?>
 
-    <!-- Facilities Grid -->
+    <!-- Facilities Display -->
     <?php if (empty($facilities)): ?>
         <div class="empty-state fade-in-up">
             <i class="fas fa-building"></i>
             <h3>Tiada Fasiliti</h3>
-            <p>Anda belum mempunyai sebarang fasiliti. Tambah fasiliti baharu untuk bermula.</p>
-            <a href="/manager/facilities/create" class="btn-add-facility">
-                <i class="fas fa-plus-circle"></i>
-                Tambah Fasiliti Pertama
-            </a>
+            <p>
+                <?php if ($user['role'] === 'manager'): ?>
+                    Anda belum mempunyai sebarang fasiliti. Tambah fasiliti baharu untuk bermula.
+                <?php else: ?>
+                    Tiada fasiliti tersedia buat masa ini.
+                <?php endif; ?>
+            </p>
+            <?php if ($user['role'] === 'manager'): ?>
+                <a href="/manager/facilities/create" class="btn-add-facility">
+                    <i class="fas fa-plus-circle"></i>
+                    Tambah Fasiliti Pertama
+                </a>
+            <?php endif; ?>
         </div>
     <?php else: ?>
-        <div class="facilities-grid stagger-animation" id="facilitiesGrid">
-            <?php foreach ($facilities as $facility): ?>
-                <div class="facility-card" data-facility-name="<?= strtolower(esc($facility['name'])) ?>" data-facility-category="<?= strtolower(esc($facility['category_name'])) ?>">
-                    <div class="facility-card-header">
-                        <div class="facility-icon">
-                            <i class="fas fa-building"></i>
-                        </div>
-                        <h3 class="facility-name"><?= esc($facility['name']) ?></h3>
-                        <span class="facility-category">
-                            <i class="fas fa-tag me-1"></i>
-                            <?= esc($facility['category_name']) ?>
-                        </span>
+        <?php if ($user['role'] === 'user'): ?>
+            <?php
+            // Group facilities by type for users
+            $publicFacilities = [];
+            $agencyFacilities = [];
+            foreach ($facilities as $facility) {
+                if ($facility['facility_type'] === 'public') {
+                    $publicFacilities[] = $facility;
+                } else {
+                    $agencyFacilities[] = $facility;
+                }
+            }
+            ?>
+
+            <!-- Public Facilities Section (Collapsible) -->
+            <?php if (!empty($publicFacilities)): ?>
+            <div class="facilities-section fade-in-up">
+                <div class="section-header" onclick="toggleSection('public-section')">
+                    <h2 class="section-title">
+                        <i class="fas fa-globe me-2"></i>
+                        Fasiliti Awam
+                        <span class="facility-count">(<?= count($publicFacilities) ?> fasiliti)</span>
+                    </h2>
+                    <button class="btn-toggle" id="public-toggle-btn">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="section-content" id="public-section">
+                    <div class="facilities-grid stagger-animation">
+                        <?php foreach ($publicFacilities as $facility): ?>
+                            <div class="facility-card" data-facility-name="<?= strtolower(esc($facility['name'])) ?>" data-facility-category="<?= strtolower(esc($facility['category_name'])) ?>" data-facility-type="public">
+                                <div class="facility-card-header">
+                                    <?php if ($facility['primary_image']): ?>
+                                        <div style="position: relative;">
+                                            <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" alt="<?= esc($facility['name']) ?>" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <?php if ($facility['image_count'] > 1): ?>
+                                            <div style="position: absolute; bottom: 1rem; right: 1rem; background: rgba(0,0,0,0.7); color: white; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                                +<?= $facility['image_count'] - 1 ?> <i class="fas fa-images"></i>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="facility-icon">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <h3 class="facility-name"><?= esc($facility['name']) ?></h3>
+                                    <span class="facility-category">
+                                        <i class="fas fa-tag me-1"></i>
+                                        <?= esc($facility['category_name']) ?>
+                                    </span>
+                                </div>
+
+                                <div class="facility-card-body">
+                                    <div class="facility-info">
+                                        <div class="info-item">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span><strong>Jenis:</strong> <?= esc($facility['type']) ?></span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-users"></i>
+                                            <span><strong>Kapasiti:</strong> <?= esc($facility['capacity']) ?> orang</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span><strong>Lokasi:</strong> <?= esc($facility['location'] ?: 'Tiada maklumat') ?></span>
+                                        </div>
+                                    </div>
+
+                                    <?php if ($facility['description']): ?>
+                                        <div class="facility-description">
+                                            <i class="fas fa-quote-left me-2" style="color: #667eea;"></i>
+                                            <?= esc($facility['description']) ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="facility-status status-active">
+                                        <i class="fas fa-check-circle"></i>
+                                        Aktif
+                                    </div>
+
+                                    <div class="facility-actions">
+                                        <a href="/user/bookings/create/<?= $facility['id'] ?>" class="btn-action btn-edit">
+                                            <i class="fas fa-calendar-plus"></i>
+                                            Tempah Sekarang
+                                        </a>
+                                        <button class="btn-action btn-delete" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <i class="fas fa-images"></i>
+                                            Lihat Gambar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                    
-                    <div class="facility-card-body">
-                        <div class="facility-info">
-                            <div class="info-item">
-                                <i class="fas fa-info-circle"></i>
-                                <span><strong>Jenis:</strong> <?= esc($facility['type']) ?></span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-users"></i>
-                                <span><strong>Kapasiti:</strong> <?= esc($facility['capacity']) ?> orang</span>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span><strong>Lokasi:</strong> <?= esc($facility['location'] ?: 'Tiada maklumat') ?></span>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
-                        <?php if ($facility['description']): ?>
-                            <div class="facility-description">
-                                <i class="fas fa-quote-left me-2" style="color: #667eea;"></i>
-                                <?= esc($facility['description']) ?>
-                            </div>
-                        <?php endif; ?>
+            <!-- Agency Facilities Section (Collapsible) -->
+            <?php if (!empty($agencyFacilities)): ?>
+            <div class="facilities-section fade-in-up">
+                <div class="section-header" onclick="toggleSection('agency-section')">
+                    <h2 class="section-title">
+                        <i class="fas fa-building me-2"></i>
+                        Fasiliti Agensi
+                        <span class="facility-count">(<?= count($agencyFacilities) ?> fasiliti)</span>
+                    </h2>
+                    <button class="btn-toggle" id="agency-toggle-btn">
+                        <i class="fas fa-chevron-up"></i>
+                    </button>
+                </div>
+                <div class="section-content" id="agency-section">
+                    <div class="facilities-grid stagger-animation">
+                        <?php foreach ($agencyFacilities as $facility): ?>
+                            <div class="facility-card" data-facility-name="<?= strtolower(esc($facility['name'])) ?>" data-facility-category="<?= strtolower(esc($facility['category_name'])) ?>" data-facility-type="agency">
+                                <div class="facility-card-header">
+                                    <?php if ($facility['primary_image']): ?>
+                                        <div style="position: relative;">
+                                            <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" alt="<?= esc($facility['name']) ?>" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <?php if ($facility['image_count'] > 1): ?>
+                                            <div style="position: absolute; bottom: 1rem; right: 1rem; background: rgba(0,0,0,0.7); color: white; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                                +<?= $facility['image_count'] - 1 ?> <i class="fas fa-images"></i>
+                                            </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="facility-icon">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <h3 class="facility-name"><?= esc($facility['name']) ?></h3>
+                                    <span class="facility-category">
+                                        <i class="fas fa-tag me-1"></i>
+                                        <?= esc($facility['category_name']) ?>
+                                    </span>
+                                    <?php if (isset($facility['agency_name']) && $facility['agency_name']): ?>
+                                    <span class="facility-agency">
+                                        <i class="fas fa-university me-1"></i>
+                                        <?= esc($facility['agency_name']) ?>
+                                    </span>
+                                    <?php endif; ?>
+                                </div>
 
-                        <div class="mb-3">
-                            <span class="facility-status status-<?= strtolower($facility['status']) ?>">
-                                <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
-                                <?= esc($facility['status']) ?>
+                                <div class="facility-card-body">
+                                    <div class="facility-info">
+                                        <div class="info-item">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span><strong>Jenis:</strong> <?= esc($facility['type']) ?></span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-users"></i>
+                                            <span><strong>Kapasiti:</strong> <?= esc($facility['capacity']) ?> orang</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span><strong>Lokasi:</strong> <?= esc($facility['location'] ?: 'Tiada maklumat') ?></span>
+                                        </div>
+                                    </div>
+
+                                    <?php if ($facility['description']): ?>
+                                        <div class="facility-description">
+                                            <i class="fas fa-quote-left me-2" style="color: #667eea;"></i>
+                                            <?= esc($facility['description']) ?>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <div class="facility-status status-active">
+                                        <i class="fas fa-check-circle"></i>
+                                        Aktif
+                                    </div>
+
+                                    <div class="facility-actions">
+                                        <a href="/user/bookings/create/<?= $facility['id'] ?>" class="btn-action btn-edit">
+                                            <i class="fas fa-calendar-plus"></i>
+                                            Tempah Sekarang
+                                        </a>
+                                        <button class="btn-action btn-delete" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                            <i class="fas fa-images"></i>
+                                            Lihat Gambar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <!-- Manager View: Single Grid -->
+            <div class="facilities-grid stagger-animation" id="facilitiesGrid">
+                <?php foreach ($facilities as $facility): ?>
+                    <div class="facility-card" data-facility-name="<?= strtolower(esc($facility['name'])) ?>" data-facility-category="<?= strtolower(esc($facility['category_name'])) ?>" data-facility-type="<?= esc($facility['facility_type']) ?>">
+                        <div class="facility-card-header">
+                            <?php if ($facility['primary_image']): ?>
+                                <div style="position: relative;">
+                                    <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" alt="<?= esc($facility['name']) ?>" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 1rem; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                    <?php if ($facility['image_count'] > 1): ?>
+                                    <div style="position: absolute; bottom: 1rem; right: 1rem; background: rgba(0,0,0,0.7); color: white; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;" onclick="viewFacilityImages(<?= $facility['id'] ?>, '<?= esc($facility['name']) ?>')">
+                                        +<?= $facility['image_count'] - 1 ?> <i class="fas fa-images"></i>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="facility-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                            <?php endif; ?>
+                            <h3 class="facility-name"><?= esc($facility['name']) ?></h3>
+                            <span class="facility-category">
+                                <i class="fas fa-tag me-1"></i>
+                                <?= esc($facility['category_name']) ?>
                             </span>
                         </div>
 
-                        <div class="facility-actions">
-                            <button type="button" class="btn-action btn-edit" onclick="openEditModal(<?= $facility['id'] ?>, '<?= esc($facility['name'], 'js') ?>', '<?= esc($facility['description'], 'js') ?>', <?= $facility['category_id'] ?>, '<?= esc($facility['type']) ?>', '<?= esc($facility['status']) ?>', <?= $facility['capacity'] ?>, '<?= esc($facility['location'], 'js') ?>')">
-                                <i class="fas fa-edit"></i>
-                                Edit
-                            </button>
-                            <button type="button" class="btn-action" onclick="openCalendarModal(<?= $facility['id'] ?>, '<?= esc($facility['name'], 'js') ?>')" style="background: var(--info-gradient); color: white; box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);">
-                                <i class="fas fa-calendar-alt"></i>
-                                Kalendar
-                            </button>
-                            <form method="post" action="/manager/facilities/<?= $facility['id'] ?>/delete" class="d-inline flex-fill" onsubmit="return confirm('Adakah anda pasti mahu memadam fasiliti ini?')">
-                                <button type="submit" class="btn-action btn-delete w-100">
-                                    <i class="fas fa-trash"></i>
-                                    Padam
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-</div>
+                        <div class="facility-card-body">
+                            <div class="facility-info">
+                                <div class="info-item">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span><strong>Jenis:</strong> <?= esc($facility['type']) ?></span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-users"></i>
+                                    <span><strong>Kapasiti:</strong> <?= esc($facility['capacity']) ?> orang</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span><strong>Lokasi:</strong> <?= esc($facility['location'] ?: 'Tiada maklumat') ?></span>
+                                </div>
+                            </div>
 
-<!-- Edit Facility Modal -->
-<div class="modal fade" id="editFacilityModal" tabindex="-1" aria-labelledby="editFacilityModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 20px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <div class="modal-header" style="background: var(--primary-gradient); color: white; border-radius: 20px 20px 0 0; padding: 2rem;">
-                <h5 class="modal-title" id="editFacilityModalLabel" style="font-weight: 700; font-size: 1.5rem;">
-                    <i class="fas fa-edit me-2"></i>Edit Fasiliti
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <?php if ($facility['description']): ?>
+                                <div class="facility-description">
+                                    <i class="fas fa-quote-left me-2" style="color: #667eea;"></i>
+                                    <?= esc($facility['description']) ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <div class="mb-3">
+                                <span class="facility-status status-<?= strtolower($facility['status']) ?>">
+                                    <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                                    <?= esc($facility['status']) ?>
+                                </span>
+                            </div>
+
+                            <div class="facility-actions">
+                                <a href="/manager/facilities/<?= $facility['id'] ?>/edit" class="btn-action btn-edit" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </a>
+                                <button type="button" class="btn-action" onclick="openCalendarModal(<?= $facility['id'] ?>, '<?= esc($facility['name'], 'js') ?>')" style="background: var(--info-gradient); color: white; box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    Kalendar
+                                </button>
+                                <form method="post" action="/manager/facilities/<?= $facility['id'] ?>/delete" class="d-inline flex-fill" onsubmit="return confirm('Adakah anda pasti mahu memadam fasiliti ini?')">
+                                    <button type="submit" class="btn-action btn-delete w-100">
+                                        <i class="fas fa-trash"></i>
+                                        Padam
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-            <form id="editFacilityForm" method="post">
-                <div class="modal-body" style="padding: 2rem;">
-                    <div class="mb-3">
-                        <label for="edit_name" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                            <i class="fas fa-building me-2" style="color: #667eea;"></i>Nama Fasiliti
-                        </label>
-                        <input type="text" class="form-control" id="edit_name" name="name" required style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_description" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                            <i class="fas fa-align-left me-2" style="color: #667eea;"></i>Penerangan
-                        </label>
-                        <textarea class="form-control" id="edit_description" name="description" rows="3" style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;"></textarea>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_category_id" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                                <i class="fas fa-tag me-2" style="color: #667eea;"></i>Kategori
-                            </label>
-                            <select class="form-control" id="edit_category_id" name="category_id" required style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                                <?php foreach ($categories as $category): ?>
-                                    <option value="<?= $category['id'] ?>"><?= esc($category['name']) ?></option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_type" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                                <i class="fas fa-info-circle me-2" style="color: #667eea;"></i>Jenis
-                            </label>
-                            <select class="form-control" id="edit_type" name="type" required style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                                <option value="public">Awam</option>
-                                <option value="agency">Agensi</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_status" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                                <i class="fas fa-toggle-on me-2" style="color: #667eea;"></i>Status
-                            </label>
-                            <select class="form-control" id="edit_status" name="status" required style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="edit_capacity" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                                <i class="fas fa-users me-2" style="color: #667eea;"></i>Kapasiti
-                            </label>
-                            <input type="number" class="form-control" id="edit_capacity" name="capacity" style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_location" class="form-label" style="font-weight: 600; color: #2c3e50;">
-                            <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>Lokasi
-                        </label>
-                        <input type="text" class="form-control" id="edit_location" name="location" style="border: 2px solid #e9ecef; border-radius: 12px; padding: 0.875rem;">
-                    </div>
-                </div>
-                <div class="modal-footer" style="padding: 1.5rem 2rem; border-top: 2px solid #f8f9fa;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 12px; padding: 0.75rem 1.5rem; font-weight: 600;">
-                        <i class="fas fa-times me-2"></i>Batal
-                    </button>
-                    <button type="submit" class="btn btn-primary" style="background: var(--primary-gradient); border: none; border-radius: 12px; padding: 0.75rem 1.5rem; font-weight: 600; box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);">
-                        <i class="fas fa-save me-2"></i>Kemaskini Fasiliti
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+        <?php endif; ?>
+    <?php endif; ?>
 </div>
 
 <!-- Calendar Modal -->
@@ -856,22 +1134,6 @@ document.getElementById('searchInput')?.addEventListener('input', function(e) {
         }
     });
 });
-
-// Open edit modal
-function openEditModal(id, name, description, categoryId, type, status, capacity, location) {
-    document.getElementById('edit_name').value = name;
-    document.getElementById('edit_description').value = description;
-    document.getElementById('edit_category_id').value = categoryId;
-    document.getElementById('edit_type').value = type;
-    document.getElementById('edit_status').value = status;
-    document.getElementById('edit_capacity').value = capacity;
-    document.getElementById('edit_location').value = location;
-    
-    document.getElementById('editFacilityForm').action = '/manager/facilities/' + id + '/update';
-    
-    const modal = new bootstrap.Modal(document.getElementById('editFacilityModal'));
-    modal.show();
-}
 
 // Open calendar modal
 let currentCalendarYear;
@@ -1416,6 +1678,84 @@ document.getElementById('blockDatesForm')?.addEventListener('submit', function(e
     
     // Submit the form
     this.submit();
+});
+
+// Function to view all facility images in modal
+function viewFacilityImages(facilityId, facilityName) {
+    fetch(`/manager/facilities/${facilityId}/images`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.images && data.images.length > 0) {
+                let imagesHtml = '<div class="d-flex gap-3" style="overflow-x: auto; padding: 1rem 0;">';
+                data.images.forEach(img => {
+                    imagesHtml += `
+                        <div style="flex-shrink: 0;">
+                            <img src="/images/facility/${img.id}" alt="Facility Image" style="width: 250px; height: 200px; object-fit: cover; border-radius: 8px; border: ${img.is_primary ? '3px solid #667eea' : 'none'}">
+                            ${img.is_primary ? '<div style="text-align: center; margin-top: 0.5rem; font-weight: 600; color: #667eea;"><i class="fas fa-star me-1"></i>Utama</div>' : ''}
+                        </div>
+                    `;
+                });
+                imagesHtml += '</div>';
+                
+                Swal.fire({
+                    title: `Gambar - ${facilityName}`,
+                    html: imagesHtml,
+                    width: '90%',
+                    confirmButtonText: 'Tutup',
+                    confirmButtonColor: '#667eea'
+                });
+            } else {
+                Swal.fire('Tiada Gambar', 'Fasiliti ini belum mempunyai gambar.', 'info');
+            }
+        });
+}
+
+// Section Toggle Functionality
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const toggleBtn = document.getElementById(sectionId.replace('-section', '-toggle-btn'));
+    
+    if (section && toggleBtn) {
+        const isCollapsed = section.classList.contains('collapsed');
+        
+        if (isCollapsed) {
+            // Expand section
+            section.classList.remove('collapsed');
+            toggleBtn.classList.remove('collapsed');
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+        } else {
+            // Collapse section
+            section.classList.add('collapsed');
+            toggleBtn.classList.add('collapsed');
+            toggleBtn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+        }
+    }
+}
+
+// Agency Facilities Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const agencyToggle = document.getElementById('showAgencyFacilities');
+    if (agencyToggle) {
+        agencyToggle.addEventListener('change', function() {
+            const showAgency = this.checked;
+            const facilityCards = document.querySelectorAll('.facility-card');
+            
+            facilityCards.forEach(card => {
+                const facilityType = card.getAttribute('data-facility-type');
+                if (facilityType === 'agency') {
+                    card.style.display = showAgency ? 'block' : 'none';
+                }
+            });
+            
+            // Update toggle label
+            const toggleLabel = document.querySelector('.form-check-label');
+            if (toggleLabel) {
+                toggleLabel.innerHTML = showAgency ? 
+                    '<i class="fas fa-building me-2"></i>Tunjuk Fasiliti Agensi' : 
+                    '<i class="fas fa-building me-2"></i>Sembunyi Fasiliti Agensi';
+            }
+        });
+    }
 });
 </script>
 

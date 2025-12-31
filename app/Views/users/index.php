@@ -217,6 +217,17 @@
         transform: translateY(-1px);
     }
 
+    .btn-password {
+        background: var(--info-gradient);
+        color: white;
+    }
+
+    .btn-password:hover {
+        background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        color: white;
+        transform: translateY(-1px);
+    }
+
     .btn-delete {
         background: var(--danger-gradient);
         color: white;
@@ -550,6 +561,11 @@
                                 <a href="/admin/users/<?= $user['id'] ?>/edit" class="btn-action btn-edit" title="Edit Pengguna">
                                     <i class="fas fa-edit"></i>
                                     <small>Edit</small>
+                                </a>
+
+                                <a href="/admin/users/<?= $user['id'] ?>/change-password" class="btn-action btn-password" title="Tukar Kata Laluan">
+                                    <i class="fas fa-key"></i>
+                                    <small>Password</small>
                                 </a>
 
                                 <?php if ($user['role'] !== 'admin'): ?>

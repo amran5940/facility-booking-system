@@ -12,17 +12,16 @@ class RoleFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $user = session('user');
-        if (!$user) {
-            return redirect()->to('/login');
-        }
-
-        $allowed = $arguments ?? [];
-        if (!empty($allowed) && !in_array($user['role'], $allowed, true)) {
+        if (!session()->has('user')) {
             return redirect()->to('/');
         }
 
-        return null;
+        $userRole = session('user')['role'];
+        $allowedRoles = $arguments;
+
+        if (!in_array($userRole, $allowedRoles)) {
+            return redirect()->to('/');
+        }
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

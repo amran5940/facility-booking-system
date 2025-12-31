@@ -25,6 +25,17 @@
             --card-shadow-hover: 0 18px 46px rgba(0, 0, 0, 0.16);
             --glass: rgba(255,255,255,0.92);
             --glass-border: 1px solid rgba(0,0,0,0.05);
+            
+            /* Typography Scale */
+            --fs-body: 0.875rem;    /* 14px */
+            --fs-small: 0.8125rem;  /* 13px */
+            --fs-input: 0.875rem;   /* 14px */
+            --fs-h1: 1.25rem;       /* 20px */
+            --fs-h2: 1.125rem;      /* 18px */
+            --fs-h3: 1rem;          /* 16px */
+            --lh-tight: 1.3;
+            --lh-normal: 1.5;
+            --lh-relaxed: 1.6;
         }
 
         body {
@@ -32,10 +43,34 @@
             background: #f5f6f8;
             min-height: 100vh;
             margin: 0;
-            font-size: 16px;
-            line-height: 1.6;
+            font-size: var(--fs-body);
+            line-height: var(--lh-normal);
             color: #111217;
         }
+        
+        h1, .h1 { font-size: var(--fs-h1); line-height: var(--lh-tight); font-weight: 600; }
+        h2, .h2 { font-size: var(--fs-h2); line-height: var(--lh-tight); font-weight: 600; }
+        h3, .h3 { font-size: var(--fs-h3); line-height: var(--lh-tight); font-weight: 600; }
+        
+        .small, small { font-size: var(--fs-small); }
+        
+        .btn { font-size: var(--fs-input); line-height: 1.2; padding: 0.5rem 1rem; }
+        .btn-sm { font-size: var(--fs-small); padding: 0.4rem 0.8rem; }
+        .btn-lg { font-size: var(--fs-body); padding: 0.6rem 1.2rem; }
+        
+        input, select, textarea, .form-control, .form-select {
+            font-size: var(--fs-input);
+            line-height: 1.4;
+        }
+        
+        label, .form-label { font-size: var(--fs-small); font-weight: 500; }
+        
+        .table { font-size: var(--fs-small); }
+        .table th { font-size: var(--fs-input); font-weight: 600; }
+        .table td { line-height: 1.5; }
+        
+        .card-title { font-size: var(--fs-h3); font-weight: 600; }
+        .card-text { font-size: var(--fs-body); line-height: var(--lh-relaxed); }
 
         .navbar-custom {
             background: #fff !important;
@@ -472,13 +507,31 @@
                         <div class="card-body p-3 text-start">
                             <ul class="facility-list mb-0">
                                 <?php foreach ($facilitiesByAgency[$agency['id']] as $facility): ?>
-                                <li>
-                                    <i class="fas fa-circle" style="font-size: 0.5rem; color: #22c55e;"></i>
-                                    <span class="fw-semibold"><?= esc($facility['name']) ?></span>
-                                    <span class="text-muted">&middot; <?= esc($facility['capacity'] ?? 'N/A') ?> kapasiti</span>
-                                    <?php if (!empty($facility['description'])): ?>
-                                    <span class="text-muted">&middot; <?= esc($facility['description']) ?></span>
+                                <li style="align-items: flex-start; gap: 12px;">
+                                    <?php if ($facility['primary_image']): ?>
+                                    <img src="/images/facility/<?= $facility['primary_image']['id'] ?>" alt="<?= esc($facility['name']) ?>" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0;">
+                                    <?php else: ?>
+                                    <i class="fas fa-building" style="font-size: 1.5rem; color: #22c55e; flex-shrink: 0; margin-top: 2px;"></i>
                                     <?php endif; ?>
+                                    <div style="flex-grow: 1;">
+                                        <div class="fw-semibold"><?= esc($facility['name']) ?></div>
+                                        <div class="text-muted small">
+                                            <?= esc($facility['capacity'] ?? 'N/A') ?> kapasiti
+                                            <?php if (isset($facility['pricing_type']) && $facility['pricing_type']): ?>
+                                                &middot; <i class="fas fa-money-bill-wave"></i> 
+                                                <strong style="color: #22c55e;">
+                                                    <?php if ($facility['pricing_type'] === 'hourly'): ?>
+                                                        RM <?= number_format($facility['price_per_hour'], 2) ?>/jam
+                                                    <?php else: ?>
+                                                        RM <?= number_format($facility['price_per_day'], 2) ?>/hari
+                                                    <?php endif; ?>
+                                                </strong>
+                                            <?php endif; ?>
+                                            <?php if (!empty($facility['description'])): ?>
+                                                &middot; <?= esc($facility['description']) ?>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </li>
                                 <?php endforeach; ?>
                             </ul>
