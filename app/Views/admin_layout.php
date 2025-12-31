@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
-    <title>Sistem Tempahan Aset - Admin</title>
+    <title>Sistem Tempahan Fasiliti - Admin</title>
+    <link rel="icon" href="/images/kedah-coat.svg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -196,21 +197,28 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h5>
-                <i class="fas fa-crown"></i>
+                <i class="fas fa-user-shield"></i>
                 <?= lang('App.admin_panel') ?>
             </h5>
         </div>
         <ul class="nav flex-column px-2">
-            <li class="nav-item">
-                <a class="nav-link" href="/admin">
-                    <i class="fas fa-chart-line"></i>
-                    <span><?= lang('App.dashboard') ?></span>
-                </a>
-            </li>
+            <!-- Main navigation links -->
             <li class="nav-item">
                 <a class="nav-link" href="/admin/agencies">
                     <i class="fas fa-building"></i>
                     <span><?= lang('App.agencies') ?></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/facilities">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><?= lang('App.facilities') ?></span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span><?= lang('App.dashboard') ?></span>
                 </a>
             </li>
             <li class="nav-item">
@@ -226,9 +234,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/admin/facilities">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span><?= lang('App.facilities') ?></span>
+                <a class="nav-link" href="/admin/users">
+                    <i class="fas fa-users"></i>
+                    <span>Pengguna</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -238,11 +246,12 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                <a class="nav-link" href="/admin/change-password">
                     <i class="fas fa-key"></i>
                     <span>Tukar Kata Laluan</span>
                 </a>
             </li>
+            
             <li class="nav-item mt-auto">
                 <a class="nav-link text-danger" href="/logout">
                     <i class="fas fa-sign-out-alt"></i>
@@ -260,7 +269,7 @@
                 <button class="btn mobile-menu-btn d-md-none me-3" type="button" onclick="toggleSidebar()">
                     <i class="fas fa-bars"></i>
                 </button>
-                <span class="brand-logo">Sistem Tempahan Aset</span>
+                <span class="brand-logo">Sistem Tempahan Fasiliti</span>
                 <div class="d-flex align-items-center">
                     <div class="user-avatar me-2">
                         <i class="fas fa-user"></i>
@@ -276,52 +285,6 @@
         <!-- Page content -->
         <div class="content-wrapper">
             <?= $this->renderSection('content') ?>
-        </div>
-    </div>
-
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: var(--card-shadow);">
-                <div class="modal-header" style="background: var(--quest-gradient); color: white; border-radius: 15px 15px 0 0; border-bottom: none;">
-                    <h5 class="modal-title" id="changePasswordModalLabel">
-                        <i class="fas fa-key me-2"></i>Tukar Kata Laluan
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div id="changePasswordAlert" style="display: none;"></div>
-                    <form id="changePasswordForm">
-                        <div class="mb-3">
-                            <label for="current_password" class="form-label fw-semibold">
-                                <i class="fas fa-lock me-1"></i>Kata Laluan Semasa
-                            </label>
-                            <input type="password" class="form-control form-control-lg" id="current_password" name="current_password" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-                        </div>
-                        <div class="mb-3">
-                            <label for="new_password" class="form-label fw-semibold">
-                                <i class="fas fa-lock me-1"></i>Kata Laluan Baharu
-                            </label>
-                            <input type="password" class="form-control form-control-lg" id="new_password" name="new_password" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-                            <div class="form-text">Kata laluan mesti sekurang-kurangnya 8 aksara</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label fw-semibold">
-                                <i class="fas fa-lock me-1"></i>Sahkan Kata Laluan Baharu
-                            </label>
-                            <input type="password" class="form-control form-control-lg" id="confirm_password" name="confirm_password" required style="border-radius: 10px; border: 2px solid #e9ecef;">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer border-0 p-4">
-                    <button type="button" class="btn btn-secondary btn-lg me-2" data-bs-dismiss="modal" style="border-radius: 25px; padding: 0.5rem 1.5rem;">
-                        <i class="fas fa-times me-1"></i>Batal
-                    </button>
-                    <button type="button" class="btn btn-primary btn-lg" id="changePasswordBtn" style="background: var(--quest-gradient); border: none; border-radius: 25px; padding: 0.5rem 1.5rem;">
-                        <i class="fas fa-save me-1"></i>Tukar Kata Laluan
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -357,89 +320,6 @@
         // Add loading animation
         window.addEventListener('load', function() {
             document.body.classList.add('loaded');
-        });
-
-        // Change Password Modal Functionality
-        document.getElementById('changePasswordBtn').addEventListener('click', function() {
-            const form = document.getElementById('changePasswordForm');
-            const formData = new FormData(form);
-            const alertDiv = document.getElementById('changePasswordAlert');
-
-            // Clear previous alerts
-            alertDiv.style.display = 'none';
-            alertDiv.className = 'alert';
-
-            // Basic client-side validation
-            const newPassword = formData.get('new_password');
-            const confirmPassword = formData.get('confirm_password');
-
-            if (newPassword !== confirmPassword) {
-                alertDiv.className = 'alert alert-danger';
-                alertDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Kata laluan baharu tidak sepadan';
-                alertDiv.style.display = 'block';
-                return;
-            }
-
-            if (newPassword.length < 8) {
-                alertDiv.className = 'alert alert-danger';
-                alertDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Kata laluan baharu mesti sekurang-kurangnya 8 aksara';
-                alertDiv.style.display = 'block';
-                return;
-            }
-
-            // Show loading state
-            const btn = document.getElementById('changePasswordBtn');
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Memproses...';
-            btn.disabled = true;
-
-            // Submit form via AJAX
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-            formData.append('csrf_test_name', csrfToken);
-
-            fetch('/change-password', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alertDiv.className = 'alert alert-success';
-                    alertDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>' + data.message;
-                    alertDiv.style.display = 'block';
-
-                    // Reset form and close modal after success
-                    setTimeout(() => {
-                        form.reset();
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
-                        modal.hide();
-                    }, 2000);
-                } else {
-                    alertDiv.className = 'alert alert-danger';
-                    alertDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>' + data.message;
-                    alertDiv.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                alertDiv.className = 'alert alert-danger';
-                alertDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i>Ralat berlaku. Sila cuba lagi.';
-                alertDiv.style.display = 'block';
-                console.error('Error:', error);
-            })
-            .finally(() => {
-                // Reset button state
-                btn.innerHTML = originalHtml;
-                btn.disabled = false;
-            });
-        });
-
-        // Reset form when modal is closed
-        document.getElementById('changePasswordModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementById('changePasswordForm').reset();
-            document.getElementById('changePasswordAlert').style.display = 'none';
         });
     </script>
 </body>

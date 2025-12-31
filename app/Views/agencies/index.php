@@ -56,6 +56,14 @@
         align-items: center;
     }
 
+    .btn-action-group .btn {
+        flex: 1;
+        min-width: 160px;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.9rem;
+    }
+
     .btn-modern {
         background: var(--primary-gradient);
         border: none;
@@ -244,10 +252,25 @@
     .manager-select {
         border: 2px solid #e9ecef;
         border-radius: 8px;
-        padding: 0.5rem;
-        font-size: 0.8rem;
-        margin-right: 0.5rem;
-        min-width: 150px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        background: white;
+        min-width: 180px;
+        transition: border-color 0.3s ease;
+        margin-bottom: 0.5rem;
+    }
+
+    .manager-select:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .assignment-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
     }
 
     .alert-modern {
@@ -315,16 +338,49 @@
             align-items: stretch;
         }
 
+        .btn-action-group .btn {
+            flex: none;
+            min-width: unset;
+            width: 100%;
+        }
+
         .agency-actions {
+            gap: 0.75rem;
+        }
+
+        .action-row {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .manager-assignment-section {
+            padding: 0.75rem;
+        }
+
+        .manager-select {
+            min-width: 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-icon-label {
             justify-content: center;
+            min-width: 120px;
+        }
+
+        .assignment-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .assignment-form .manager-select {
+            margin-bottom: 0.5rem;
         }
     }
+    }
 </style>
-
-<!-- Header Section -->
 <div class="agencies-header fade-in-up">
     <h1><i class="fas fa-building me-3"></i>Pengurusan Agensi</h1>
-    <p>Kelola semua agensi dan pengurus dalam sistem tempahan aset</p>
+    <p>Kelola semua agensi dan pengurus dalam sistem tempahan fasiliti</p>
 </div>
 
 <!-- Action Buttons Section -->
@@ -419,41 +475,54 @@
                     </div>
 
                     <div class="agency-actions">
-                        <a href="/admin/agencies/<?= $agency['id'] ?>/edit" class="btn-icon-label btn-edit">
-                            <i class="fas fa-edit"></i>
-                            <small>Edit</small>
-                        </a>
+                        <!-- Basic Actions Row -->
+                        <div class="action-row">
+                            <a href="/admin/agencies/<?= $agency['id'] ?>/edit" class="btn-icon-label btn-edit">
+                                <i class="fas fa-edit"></i>
+                                <small>Edit</small>
+                            </a>
 
-                        <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/delete" class="d-inline" onsubmit="return confirm('Adakah anda pasti mahu memadam agensi ini?')">
-                            <button type="submit" class="btn-icon-label btn-delete">
-                                <i class="fas fa-trash"></i>
-                                <small>Padam</small>
-                            </button>
-                        </form>
-
-                        <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/assign" class="d-inline">
-                            <select name="manager_id" class="manager-select">
-                                <option value="">Tugaskan Pengurus</option>
-                                <?php foreach ($managers as $manager): ?>
-                                    <option value="<?= $manager['id'] ?>" <?= $manager['agency_id'] == $agency['id'] ? 'selected' : '' ?>>
-                                        <?= esc($manager['full_name']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <button type="submit" class="btn-icon-label btn-assign">
-                                <i class="fas fa-user-plus"></i>
-                                <small>Tugaskan</small>
-                            </button>
-                        </form>
-
-                        <?php if ($assignedManager): ?>
-                            <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/unassign" class="d-inline" onsubmit="return confirm('Adakah anda pasti mahu menarik tugasan pengurus?')">
-                                <button type="submit" class="btn-icon-label btn-unassign">
-                                    <i class="fas fa-user-minus"></i>
-                                    <small>Tarik</small>
+                            <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/delete" class="d-inline" onsubmit="return confirm('Adakah anda pasti mahu memadam agensi ini?')">
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn-icon-label btn-delete">
+                                    <i class="fas fa-trash"></i>
+                                    <small>Padam</small>
                                 </button>
                             </form>
-                        <?php endif; ?>
+                        </div>
+
+                        <!-- Manager Assignment Section -->
+                        <div class="manager-assignment-section">
+                            <div class="action-row">
+                                <?php if ($assignedManager): ?>
+                                    <!-- Show unassign option when manager is assigned -->
+                                    <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/unassign" class="d-inline" onsubmit="return confirm('Adakah anda pasti mahu menarik tugasan pengurus ini?')">
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn-icon-label btn-unassign">
+                                            <i class="fas fa-user-minus"></i>
+                                            <small>Tarik</small>
+                                        </button>
+                                    </form>
+                                <?php else: ?>
+                                    <!-- Show assignment form when no manager is assigned -->
+                                    <form method="post" action="/admin/agencies/<?= $agency['id'] ?>/assign" class="d-inline assignment-form">
+                                        <?= csrf_field() ?>
+                                        <select name="manager_id" class="manager-select">
+                                            <option value="">Pilih Pengurus</option>
+                                            <?php foreach ($managers as $manager): ?>
+                                                <option value="<?= $manager['id'] ?>" <?= $manager['agency_id'] == $agency['id'] ? 'selected' : '' ?>>
+                                                    <?= esc($manager['full_name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <button type="submit" class="btn-icon-label btn-assign">
+                                            <i class="fas fa-user-plus"></i>
+                                            <small>Tugaskan</small>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

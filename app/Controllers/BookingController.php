@@ -71,6 +71,8 @@ class BookingController extends BaseController
 
     public function create($facilityId)
     {
+        $user = session('user');
+
         $facilityModel = new FacilityModel();
         $facility = $facilityModel->select('facilities.*, agencies.name as agency_name, facility_categories.name as category_name')
             ->join('agencies', 'agencies.id = facilities.agency_id', 'left')
@@ -79,6 +81,13 @@ class BookingController extends BaseController
 
         if (!$facility) {
             return redirect()->to('/user')->with('error', 'Facility not found');
+        }
+
+        // Access control: public users can only book public facilities; agency users can book their own agency facilities and public facilities
+        if ($facility['type'] === 'agency') {
+            if (!isset($user['user_type']) || $user['user_type'] !== 'agency' || $facility['agency_id'] != $user['agency_id']) {
+                return redirect()->to('/user')->with('error', 'Access denied');
+            }
         }
 
         $categoryModel = new FacilityCategoryModel();
@@ -120,6 +129,10 @@ class BookingController extends BaseController
             'end_date'   => $this->request->getPost('end_date'),
             'status'     => 'pending',
             'notes'      => trim((string) $this->request->getPost('notes')),
+            'payment_gateway' => $this->request->getPost('payment_gateway'),
+            'deposit_amount' => $this->request->getPost('deposit_amount'),
+            'payment_status' => 'pending',
+            'total_amount' => $this->request->getPost('total_amount') ?: null,
         ];
 
         $bookingModel = new BookingModel();

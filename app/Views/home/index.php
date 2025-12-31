@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Tempahan Aset & Fasiliti</title>
+    <title>Sistem Tempahan Fasiliti</title>
+    <link rel="icon" href="/images/kedah-coat.svg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -48,22 +49,22 @@
         }
 
         .hero-section {
-            padding: 120px 0 80px;
+            padding: 100px 0 60px;
             color: #111217;
             text-align: left;
             background: linear-gradient(135deg, #fff 0%, #f7f7f7 60%, #fff 100%);
         }
 
-        .flow-section { background: #f9fafb; }
-        .highlights-section { background: #fff; }
-        .stats-section { background: #f9fafb; }
-        .faq-section { background: #fff; }
-        .agencies-section { background: #f9fafb; }
+        .flow-section { background: #f9fafb; padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
+        .highlights-section { background: #fff; padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
+        .stats-section { background: #f9fafb; padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
+        .faq-section { background: #fff; padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
+        .agencies-section { background: #f9fafb; padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
 
         .hero-title {
-            font-size: 2.7rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            margin-bottom: 0.9rem;
+            margin-bottom: 0.8rem;
             line-height: 1.08;
             letter-spacing: -0.35px;
             color: #0b0c0f;
@@ -71,7 +72,7 @@
 
         .hero-subtitle {
             font-size: 1.05rem;
-            margin-bottom: 1.4rem;
+            margin-bottom: 1.2rem;
             opacity: 0.85;
             line-height: 1.55;
             max-width: 640px;
@@ -147,6 +148,7 @@
             transition: all 0.3s ease;
             background: #fff !important;
             border: 1px solid #eceff3 !important;
+            border-radius: 8px;
         }
 
         .facilities-scroll {
@@ -338,7 +340,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">
-                <img src="/images/kedah-coat.svg" alt="Jata Negeri Kedah" style="height: 32px; margin-right: 10px;">Sistem Tempahan Aset
+                <img src="/images/kedah-coat.svg" alt="Jata Negeri Kedah" style="height: 40px; margin-right: 10px;">Sistem Tempahan Fasiliti
             </a>
 
             <div class="d-flex ms-auto">
@@ -361,7 +363,7 @@
                         <i class="fas fa-shield-alt"></i>
                         Portal Rasmi Kerajaan Kedah
                     </div>
-                    <h1 class="hero-title">Tempahan Aset & Fasiliti, pantas dan selamat.</h1>
+                    <h1 class="hero-title">Tempahan Fasiliti, pantas dan selamat.</h1>
                     <p class="hero-subtitle">Log masuk atau daftar untuk menempah dewan, asrama, kenderaan dan fasiliti kerajaan lain. Pantau status kelulusan dalam satu tempat yang telus.</p>
                     <div class="d-flex flex-wrap gap-3 mb-3">
                         <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#loginModal" style="background: var(--primary-gradient); color: #111217; font-weight: 700; border-radius: 12px; padding: 0.75rem 1.6rem; border: none; box-shadow: 0 12px 28px rgba(255,204,0,0.35);">
@@ -374,11 +376,10 @@
                     <div class="d-flex flex-wrap gap-2">
                         <span class="badge-soft"><i class="fas fa-landmark me-1"></i><?= $totalAgencies ?> agensi</span>
                         <span class="badge-soft"><i class="fas fa-warehouse me-1"></i><?= $totalFacilities ?> fasiliti</span>
-                        <span class="badge-soft"><i class="fas fa-clock me-1"></i>Permohonan atas talian</span>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <div class="info-card" style="padding: 1.5rem; border-radius: 18px;">
+                    <div class="info-card" style="padding: 1.5rem; border-radius: 18px; border: 2px solid #e5e7eb;">
                         <div class="d-flex align-items-start mb-3">
                             <div class="icon-badge me-3" style="background: var(--primary-gradient); color: #111217;"><i class="fas fa-check-circle"></i></div>
                             <div>
@@ -386,21 +387,46 @@
                                 <small class="text-muted">Pilih tarikh, hantar permohonan, dan jejak kelulusan terus dalam portal.</small>
                             </div>
                         </div>
-                        <div class="d-flex align-items-start mb-3">
+                        <div class="d-flex align-items-start">
                             <div class="icon-badge me-3" style="background: var(--success-gradient); color: #0b0c0f;"><i class="fas fa-calendar-check"></i></div>
                             <div>
                                 <div class="fw-bold">Ketersediaan masa nyata</div>
                                 <small class="text-muted">Lihat slot tersedia sebelum membuat tempahan.</small>
                             </div>
                         </div>
-                        <div class="d-flex align-items-start">
-                            <div class="icon-badge me-3" style="background: var(--warning-gradient); color: #111217;"><i class="fas fa-bullhorn"></i></div>
-                            <div>
-                                <div class="fw-bold">Pengumuman segera</div>
-                                <small class="text-muted">Makluman penyelenggaraan dan notis penting dikemas kini.</small>
-                            </div>
-                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Access Icons -->
+    <section class="py-4" style="background: #f5f6f8; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;">
+        <div class="container text-center">
+            <div class="row g-3 justify-content-center">
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-link p-3 d-flex flex-column align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#flowModal" style="color: #111217;">
+                        <div class="icon-badge mb-2" style="background: var(--primary-gradient); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-route fa-lg"></i></div>
+                        <small class="fw-semibold">Proses Tempahan</small>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-link p-3 d-flex flex-column align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#highlightsModal" style="color: #111217;">
+                        <div class="icon-badge mb-2" style="background: var(--warning-gradient); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-star fa-lg"></i></div>
+                        <small class="fw-semibold">Sorotan Fasiliti</small>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-link p-3 d-flex flex-column align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#statsModal" style="color: #111217;">
+                        <div class="icon-badge mb-2" style="background: var(--success-gradient); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-chart-line fa-lg"></i></div>
+                        <small class="fw-semibold">Ringkasan</small>
+                    </button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button class="btn btn-link p-3 d-flex flex-column align-items-center text-decoration-none" data-bs-toggle="modal" data-bs-target="#faqModal" style="color: #111217;">
+                        <div class="icon-badge mb-2" style="background: var(--info-gradient); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;"><i class="fas fa-question-circle fa-lg"></i></div>
+                        <small class="fw-semibold">FAQ</small>
+                    </button>
                 </div>
             </div>
         </div>
@@ -473,212 +499,6 @@
         </div>
     </section>
 
-    <!-- Flow Section -->
-    <section class="py-5 flow-section" style="background: #f9fafb;">
-        <div class="container">
-            <div class="section-heading">
-                <div class="icon-badge"><i class="fas fa-route"></i></div>
-                <div>
-                    <h3 class="mb-0">Bagaimana Proses Tempahan Berjalan</h3>
-                    <small class="text-muted">Tiga langkah ringkas untuk membuat tempahan</small>
-                </div>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="card step-card h-100 p-3">
-                        <div class="icon-badge mb-3"><i class="fas fa-search"></i></div>
-                        <h5 class="fw-bold">1. Cari & Pilih</h5>
-                        <p class="text-muted mb-0">Pilih fasiliti mengikut kategori, agensi atau kapasiti yang sesuai dengan keperluan anda.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card step-card h-100 p-3">
-                        <div class="icon-badge mb-3" style="background: var(--info-gradient);"><i class="fas fa-calendar-plus"></i></div>
-                        <h5 class="fw-bold">2. Mohon Tempahan</h5>
-                        <p class="text-muted mb-0">Hantar permohonan dengan tarikh, masa, dan keperluan. Anda boleh jejak status secara langsung.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card step-card h-100 p-3">
-                        <div class="icon-badge mb-3" style="background: var(--success-gradient);"><i class="fas fa-check-circle"></i></div>
-                        <h5 class="fw-bold">3. Kelulusan & Hadir</h5>
-                        <p class="text-muted mb-0">Terima notifikasi kelulusan, dan hadir mengikut slot yang disahkan.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Highlights Section -->
-    <section class="py-5 highlights-section" style="background: #fff;">
-        <div class="container">
-            <div class="section-heading">
-                <div class="icon-badge" style="background: var(--warning-gradient);"><i class="fas fa-star"></i></div>
-                <div>
-                    <h3 class="mb-0">Sorotan Fasiliti Popular</h3>
-                    <small class="text-muted">Kategori yang paling kerap ditempah</small>
-                </div>
-            </div>
-            <div class="row g-3">
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card stat-card h-100 p-3 text-center">
-                        <div class="icon-badge mb-2" style="background: var(--primary-gradient);"><i class="fas fa-building"></i></div>
-                        <h6 class="fw-bold mb-1">Dewan & Auditorium</h6>
-                        <small class="text-muted">Mesyuarat, seminar, majlis</small>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card stat-card h-100 p-3 text-center">
-                        <div class="icon-badge mb-2" style="background: var(--success-gradient);"><i class="fas fa-bed"></i></div>
-                        <h6 class="fw-bold mb-1">Asrama & Penginapan</h6>
-                        <small class="text-muted">Program berkumpulan & kursus</small>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card stat-card h-100 p-3 text-center">
-                        <div class="icon-badge mb-2" style="background: var(--info-gradient);"><i class="fas fa-basketball-ball"></i></div>
-                        <h6 class="fw-bold mb-1">Gelanggang & Sukan</h6>
-                        <small class="text-muted">Aktiviti riadah & kejohanan</small>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-lg-3">
-                    <div class="card stat-card h-100 p-3 text-center">
-                        <div class="icon-badge mb-2" style="background: var(--danger-gradient);"><i class="fas fa-shuttle-van"></i></div>
-                        <h6 class="fw-bold mb-1">Kenderaan Operasi</h6>
-                        <small class="text-muted">Pergerakan rasmi & logistik</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Stats & News -->
-    <section class="py-5 stats-section" style="background: #f9fafb;">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="section-heading">
-                        <div class="icon-badge" style="background: var(--success-gradient);"><i class="fas fa-chart-line"></i></div>
-                        <div>
-                            <h3 class="mb-0">Ringkasan Pantas</h3>
-                            <small class="text-muted">Gambaran semasa aset & fasiliti</small>
-                        </div>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <div class="card stat-card h-100 p-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="badge-soft mb-2">Agensi Berdaftar</div>
-                                        <h3 class="fw-bold mb-0"><?= $totalAgencies ?></h3>
-                                        <small class="text-muted">Menyediakan fasiliti kepada rakyat</small>
-                                    </div>
-                                    <div class="icon-badge" style="background: var(--primary-gradient);"><i class="fas fa-landmark"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="card stat-card h-100 p-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="badge-soft mb-2">Fasiliti Aktif</div>
-                                        <h3 class="fw-bold mb-0"><?= $totalFacilities ?></h3>
-                                        <small class="text-muted">Sedia ditempah oleh pengguna</small>
-                                    </div>
-                                    <div class="icon-badge" style="background: var(--info-gradient);"><i class="fas fa-warehouse"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="card stat-card h-100 p-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="badge-soft mb-2">Notis & Pengumuman</div>
-                                        <h3 class="fw-bold mb-0">Terkini</h3>
-                                        <small class="text-muted">Rujuk bahagian berita di portal</small>
-                                    </div>
-                                    <div class="icon-badge" style="background: var(--warning-gradient);"><i class="fas fa-bullhorn"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="card stat-card h-100 p-3">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div>
-                                        <div class="badge-soft mb-2">Sokongan</div>
-                                        <h3 class="fw-bold mb-0">24/7</h3>
-                                        <small class="text-muted">Bantuan melalui portal & e-mel</small>
-                                    </div>
-                                    <div class="icon-badge" style="background: var(--danger-gradient);"><i class="fas fa-headset"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="section-heading">
-                        <div class="icon-badge" style="background: var(--danger-gradient);"><i class="fas fa-newspaper"></i></div>
-                        <div>
-                            <h3 class="mb-0">Pengumuman & Berita</h3>
-                            <small class="text-muted">Perkembangan semasa portal tempahan</small>
-                        </div>
-                    </div>
-                    <div class="card announcement-card p-3 mb-3">
-                        <div class="d-flex align-items-start">
-                            <div class="icon-badge me-3" style="background: var(--primary-gradient);"><i class="fas fa-tools"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">Penyelenggaraan Sistem</h6>
-                                <small class="text-muted">Slot penyelenggaraan dijadualkan hujung minggu ini. Tempahan masih boleh dibuat sebelum 11:00 malam.</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card announcement-card p-3">
-                        <div class="d-flex align-items-start">
-                            <div class="icon-badge me-3" style="background: var(--success-gradient);"><i class="fas fa-bolt"></i></div>
-                            <div>
-                                <h6 class="fw-bold mb-1">Fasiliti Baharu Ditambah</h6>
-                                <small class="text-muted">Gelanggang serbaguna dan bilik seminar baharu kini dibuka untuk tempahan.</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Quick Section -->
-    <section class="py-5 faq-section" style="background: #fff;">
-        <div class="container">
-            <div class="section-heading">
-                <div class="icon-badge" style="background: var(--primary-gradient);"><i class="fas fa-question-circle"></i></div>
-                <div>
-                    <h3 class="mb-0">Soalan Lazim Ringkas</h3>
-                    <small class="text-muted">Maklumat pantas untuk pelawat baru</small>
-                </div>
-            </div>
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="card faq-card h-100 p-3">
-                        <h6 class="fw-bold">Perlu akaun untuk menempah?</h6>
-                        <p class="text-muted mb-0">Ya, sila daftar akaun terlebih dahulu untuk menghantar permohonan tempahan.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card faq-card h-100 p-3">
-                        <h6 class="fw-bold">Bila saya terima kelulusan?</h6>
-                        <p class="text-muted mb-0">Notifikasi dihantar sebaik agensi memproses permohonan. Jejak status di papan pemuka.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card faq-card h-100 p-3">
-                        <h6 class="fw-bold">Siapa yang boleh dihubungi?</h6>
-                        <p class="text-muted mb-0">Gunakan pautan sokongan dalam portal atau hubungi agensi yang menyenaraikan fasiliti tersebut.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
@@ -686,7 +506,7 @@
                 <div class="col-md-6">
                     <div class="footer-brand d-flex align-items-center mb-2">
                         <img src="/images/kedah-coat.svg" alt="Jata Negeri Kedah" style="height: 32px; margin-right: 10px;">
-                        Sistem Tempahan Aset
+                        Sistem Tempahan Fasiliti
                     </div>
                     <div class="footer-meta">Portal rasmi untuk menempah aset dan fasiliti kerajaan Kedah dengan mudah dan telus.</div>
                 </div>
@@ -729,6 +549,12 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
+                    <?php if (session()->has('login_error')): ?>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i><?= session('login_error') ?>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <?php endif; ?>
                     <form method="post" action="/login">
                         <div class="mb-3">
                             <label for="modalEmail" class="form-label fw-semibold">
@@ -909,7 +735,219 @@
                     }
                 });
             });
+
+            // Show login modal if there's a login error
+            <?php if (session()->has('login_error')): ?>
+                const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                loginModal.show();
+                // Auto-hide the error alert after 5 seconds
+                setTimeout(() => {
+                    const alert = document.querySelector('#loginModal .alert');
+                    if (alert) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                }, 5000);
+            <?php endif; ?>
         });
     </script>
+
+    <!-- Flow Modal -->
+    <div class="modal fade" id="flowModal" tabindex="-1" aria-labelledby="flowModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: var(--card-shadow);">
+                <div class="modal-header" style="background: var(--primary-gradient); color: white; border-radius: 15px 15px 0 0; border-bottom: none;">
+                    <h5 class="modal-title" id="flowModalLabel">
+                        <i class="fas fa-route me-2"></i>Bagaimana Proses Tempahan Berjalan
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <small class="text-muted d-block mb-4">Tiga langkah ringkas untuk membuat tempahan</small>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card step-card h-100 p-3">
+                                <div class="icon-badge mb-3"><i class="fas fa-search"></i></div>
+                                <h5 class="fw-bold">1. Cari & Pilih</h5>
+                                <p class="text-muted mb-0">Pilih fasiliti mengikut kategori, agensi atau kapasiti yang sesuai dengan keperluan anda.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card step-card h-100 p-3">
+                                <div class="icon-badge mb-3" style="background: var(--info-gradient);"><i class="fas fa-calendar-plus"></i></div>
+                                <h5 class="fw-bold">2. Mohon Tempahan</h5>
+                                <p class="text-muted mb-0">Hantar permohonan dengan tarikh, masa, dan keperluan. Anda boleh jejak status secara langsung.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card step-card h-100 p-3">
+                                <div class="icon-badge mb-3" style="background: var(--success-gradient);"><i class="fas fa-check-circle"></i></div>
+                                <h5 class="fw-bold">3. Kelulusan & Hadir</h5>
+                                <p class="text-muted mb-0">Terima notifikasi kelulusan, dan hadir mengikut slot yang disahkan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highlights Modal -->
+    <div class="modal fade" id="highlightsModal" tabindex="-1" aria-labelledby="highlightsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: var(--card-shadow);">
+                <div class="modal-header" style="background: var(--warning-gradient); color: white; border-radius: 15px 15px 0 0; border-bottom: none;">
+                    <h5 class="modal-title" id="highlightsModalLabel">
+                        <i class="fas fa-star me-2"></i>Sorotan Fasiliti Popular
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <small class="text-muted d-block mb-4">Kategori yang paling kerap ditempah</small>
+                    <div class="row g-3">
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="card stat-card h-100 p-3 text-center">
+                                <div class="icon-badge mb-2" style="background: var(--primary-gradient);"><i class="fas fa-building"></i></div>
+                                <h6 class="fw-bold mb-1">Dewan & Auditorium</h6>
+                                <small class="text-muted">Mesyuarat, seminar, majlis</small>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="card stat-card h-100 p-3 text-center">
+                                <div class="icon-badge mb-2" style="background: var(--success-gradient);"><i class="fas fa-bed"></i></div>
+                                <h6 class="fw-bold mb-1">Asrama & Penginapan</h6>
+                                <small class="text-muted">Program berkumpulan & kursus</small>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="card stat-card h-100 p-3 text-center">
+                                <div class="icon-badge mb-2" style="background: var(--info-gradient);"><i class="fas fa-basketball-ball"></i></div>
+                                <h6 class="fw-bold mb-1">Gelanggang & Sukan</h6>
+                                <small class="text-muted">Aktiviti riadah & kejohanan</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: var(--card-shadow);">
+                <div class="modal-header" style="background: var(--success-gradient); color: white; border-radius: 15px 15px 0 0; border-bottom: none;">
+                    <h5 class="modal-title" id="statsModalLabel">
+                        <i class="fas fa-chart-line me-2"></i>Ringkasan Pantas
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <small class="text-muted d-block mb-4">Gambaran semasa fasiliti</small>
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="card stat-card h-100 p-3">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="badge-soft mb-2">Agensi Berdaftar</div>
+                                                <h3 class="fw-bold mb-0"><?= $totalAgencies ?></h3>
+                                                <small class="text-muted">Menyediakan fasiliti kepada rakyat</small>
+                                            </div>
+                                            <div class="icon-badge" style="background: var(--primary-gradient);"><i class="fas fa-landmark"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card stat-card h-100 p-3">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="badge-soft mb-2">Fasiliti Aktif</div>
+                                                <h3 class="fw-bold mb-0"><?= $totalFacilities ?></h3>
+                                                <small class="text-muted">Sedia ditempah oleh pengguna</small>
+                                            </div>
+                                            <div class="icon-badge" style="background: var(--info-gradient);"><i class="fas fa-warehouse"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card stat-card h-100 p-3">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <div class="badge-soft mb-2">Sokongan</div>
+                                                <h3 class="fw-bold mb-0">24/7</h3>
+                                                <small class="text-muted">Bantuan melalui portal & e-mel</small>
+                                            </div>
+                                            <div class="icon-badge" style="background: var(--danger-gradient);"><i class="fas fa-headset"></i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="card announcement-card p-3 mb-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-badge me-3" style="background: var(--primary-gradient);"><i class="fas fa-tools"></i></div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Penyelenggaraan Sistem</h6>
+                                        <small class="text-muted">Slot penyelenggaraan dijadualkan hujung minggu ini. Tempahan masih boleh dibuat sebelum 11:00 malam.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card announcement-card p-3">
+                                <div class="d-flex align-items-start">
+                                    <div class="icon-badge me-3" style="background: var(--success-gradient);"><i class="fas fa-bolt"></i></div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">Fasiliti Baharu Ditambah</h6>
+                                        <small class="text-muted">Gelanggang serbaguna dan bilik seminar baharu kini dibuka untuk tempahan.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Modal -->
+    <div class="modal fade" id="faqModal" tabindex="-1" aria-labelledby="faqModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: var(--card-shadow);">
+                <div class="modal-header" style="background: var(--info-gradient); color: white; border-radius: 15px 15px 0 0; border-bottom: none;">
+                    <h5 class="modal-title" id="faqModalLabel">
+                        <i class="fas fa-question-circle me-2"></i>Soalan Lazim
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <small class="text-muted d-block mb-4">Maklumat pantas untuk pelawat baru</small>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="card faq-card h-100 p-3">
+                                <h6 class="fw-bold">Perlu akaun untuk menempah?</h6>
+                                <p class="text-muted mb-0">Ya, sila daftar akaun terlebih dahulu untuk menghantar permohonan tempahan.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card faq-card h-100 p-3">
+                                <h6 class="fw-bold">Bila saya terima kelulusan?</h6>
+                                <p class="text-muted mb-0">Notifikasi dihantar sebaik agensi memproses permohonan. Jejak status di papan pemuka.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card faq-card h-100 p-3">
+                                <h6 class="fw-bold">Siapa yang boleh dihubungi?</h6>
+                                <p class="text-muted mb-0">Gunakan pautan sokongan dalam portal atau hubungi agensi yang menyenaraikan fasiliti tersebut.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -29,12 +29,12 @@ class AgenciesController extends BaseController
         $data = [
             'name'        => trim((string) $this->request->getPost('name')),
             'description' => trim((string) $this->request->getPost('description')),
-            'status'      => 'active',
+            'status'      => $this->request->getPost('status') ?? 'active',
         ];
 
         $agencyModel = new AgencyModel();
         if ($agencyModel->insert($data)) {
-            return redirect()->to('/admin/agencies')->with('success', 'Agency created');
+            return redirect()->to('/admin/agencies')->with('success', 'Agensi berjaya dicipta');
         }
 
         return redirect()->back()->withInput()->with('errors', $agencyModel->errors());
@@ -290,5 +290,82 @@ class AgenciesController extends BaseController
         }
         
         return redirect()->back()->with('success', 'Field deleted successfully');
+    }
+
+    public function editManager($id)
+    {
+        $userModel = new UserModel();
+        $agencyModel = new AgencyModel();
+        
+        $manager = $userModel->find($id);
+        
+        if (!$manager || $manager['role'] !== 'manager') {
+            return redirect()->to('/admin/managers')->with('error', 'Manager not found');
+        }
+        
+        $agencies = $agencyModel->findAll();
+        
+        return view('managers/edit', [
+            'manager' => $manager,
+            'agencies' => $agencies
+        ]);
+    }
+
+    public function updateManager($id)
+    {
+        $userModel = new UserModel();
+        
+        $manager = $userModel->find($id);
+        if (!$manager || $manager['role'] !== 'manager') {
+            return redirect()->to('/admin/managers')->with('error', 'Manager not found');
+        }
+        
+        $agencyId = (int) $this->request->getPost('agency_id');
+        $phone = trim((string) $this->request->getPost('phone'));
+        $newEmail = strtolower(trim($this->request->getPost('email')));
+        $currentEmail = strtolower(trim($manager['email']));
+        
+        $data = [
+            'full_name' => trim((string) $this->request->getPost('full_name')),
+            'email' => $newEmail,
+            'phone' => $phone, // Always include phone, even if empty
+            'agency_id' => $agencyId > 0 ? $agencyId : null,
+            'status' => $this->request->getPost('status'),
+            'role' => 'manager', // Ensure role remains manager
+            'user_type' => 'agency', // Ensure user_type remains agency for managers
+        ];
+        
+        // Check if email is unique (excluding current user)
+        $existingUser = $userModel->where('email', $newEmail)->whereNotIn('id', [$id])->first();
+        if ($existingUser) {
+            return redirect()->back()->withInput()->with('error', 'Email already exists');
+        }
+        
+        if ($userModel->update($id, $data) === false) {
+            return redirect()->back()->withInput()->with('errors', $userModel->errors());
+        }
+        
+        return redirect()->to('/admin/managers')->with('success', 'Manager updated successfully');
+    }
+
+    public function deleteManager($id)
+    {
+        $userModel = new UserModel();
+        
+        $manager = $userModel->find($id);
+        if (!$manager || $manager['role'] !== 'manager') {
+            return redirect()->to('/admin/managers')->with('error', 'Manager not found');
+        }
+        
+        // Check if manager is assigned to an agency
+        if ($manager['agency_id']) {
+            return redirect()->to('/admin/managers')->with('error', 'Cannot delete manager who is assigned to an agency. Please unassign the manager from the agency first.');
+        }
+        
+        if ($userModel->delete($id) === false) {
+            return redirect()->to('/admin/managers')->with('error', 'Failed to delete manager');
+        }
+        
+        return redirect()->to('/admin/managers')->with('success', 'Manager deleted successfully');
     }
 }

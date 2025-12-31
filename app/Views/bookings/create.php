@@ -682,6 +682,57 @@
                         </div>
                     </div>
 
+                    <!-- Payment Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-credit-card"></i> Maklumat Pembayaran</h3>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_gateway" class="form-label">
+                                    <i class="fas fa-money-check"></i>
+                                    Kaedah Pembayaran
+                                </label>
+                                <select class="form-control" id="payment_gateway" name="payment_gateway" required>
+                                    <option value="">Pilih Kaedah Pembayaran</option>
+                                    <option value="online_banking">Perbankan Dalam Talian (FPX)</option>
+                                    <option value="credit_card">Kad Kredit</option>
+                                    <option value="debit_card">Kad Debit</option>
+                                    <option value="cash">Tunai</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="deposit_amount" class="form-label">
+                                    <i class="fas fa-coins"></i>
+                                    Jumlah Deposit (RM)
+                                </label>
+                                <input type="number" class="form-control" id="deposit_amount" name="deposit_amount"
+                                       placeholder="0.00" step="0.01" min="0" required>
+                                <small class="text-muted">Minimum deposit: RM 50.00</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="total_amount" class="form-label">
+                                    <i class="fas fa-calculator"></i>
+                                    Jumlah Keseluruhan (RM) - Pilihan
+                                </label>
+                                <input type="number" class="form-control" id="total_amount" name="total_amount"
+                                       placeholder="0.00" step="0.01" min="0">
+                                <small class="text-muted">Kos penuh termasuk deposit</small>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" style="border-radius: 10px; border-left: 4px solid #17a2b8;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Maklumat Pembayaran:</strong><br>
+                            • Deposit minimum: RM 50.00<br>
+                            • Baki pembayaran boleh dibuat selepas kelulusan tempahan<br>
+                            • Pembayaran deposit diperlukan untuk mengesahkan tempahan
+                        </div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="action-buttons">
                         <button type="submit" class="btn-submit">
@@ -713,6 +764,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    // Current viewing month and year
+    let currentViewMonth = today.getMonth();
+    let currentViewYear = today.getFullYear();
+
     // Get booked dates from PHP
     const existingBookings = <?php echo json_encode($existingBookings ?? []); ?>;
     const bookedDates = [];
@@ -727,15 +782,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate calendar
     const generateCalendar = () => {
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
+        const date = new Date(currentViewYear, currentViewMonth, 1);
+        const month = date.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
 
-        // Generate current month only
-        let html = '';
-        for (let monthOffset = 0; monthOffset < 1; monthOffset++) {
-            const date = new Date(currentYear, currentMonth + monthOffset, 1);
-            const month = date.toLocaleDateString('ms-MY', { month: 'long', year: 'numeric' });
+        // Generate single month with navigation
+        let html = `
+            <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                <button type="button" id="prevMonth" class="btn btn-outline-primary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h5 style="margin: 0; min-width: 200px; text-align: center; font-weight: 700;">${month}</h5>
+                <button type="button" id="nextMonth" class="btn btn-outline-primary" style="border-radius: 50%; width: 40px; height: 40px; padding: 0;">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        `;
             
             html += `<div class="calendar-month">
                 <div class="calendar-header">${month}</div>
@@ -792,9 +853,27 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             html += '</div></div>';
-        }
 
         calendarContainer.innerHTML = html;
+
+        // Add event listeners for month navigation
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentViewMonth--;
+            if (currentViewMonth < 0) {
+                currentViewMonth = 11;
+                currentViewYear--;
+            }
+            generateCalendar();
+        });
+
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentViewMonth++;
+            if (currentViewMonth > 11) {
+                currentViewMonth = 0;
+                currentViewYear++;
+            }
+            generateCalendar();
+        });
     };
 
     // Global function to toggle date - only allow adjacent dates
@@ -899,6 +978,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedDates.length === 0) {
             e.preventDefault();
             alert('Sila pilih sekurang-kurangnya satu hari untuk tempahan');
+            return false;
+        }
+
+        // Validate deposit amount
+        const depositAmount = parseFloat(document.getElementById('deposit_amount').value);
+        if (!depositAmount || depositAmount < 50) {
+            e.preventDefault();
+            alert('Jumlah deposit minimum adalah RM 50.00');
+            document.getElementById('deposit_amount').focus();
             return false;
         }
 

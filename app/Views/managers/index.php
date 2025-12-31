@@ -160,6 +160,18 @@
         margin-top: 0.5rem;
     }
 
+    .manager-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .manager-actions .btn {
+        padding: 0.375rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+    }
+
     .fade-in-up {
         animation: fadeInUp 0.6s ease-out;
     }
@@ -206,6 +218,21 @@
     <p>Kelola dan pantau semua pengurus dalam sistem</p>
 </div>
 
+<!-- Messages -->
+<?php if (session()->has('success')): ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i><?= esc(session('success')) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
+<?php if (session()->has('error')): ?>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle me-2"></i><?= esc(session('error')) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
 <!-- Managers Grid -->
 <div class="row">
     <?php foreach ($managers as $manager): ?>
@@ -247,20 +274,40 @@
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="manager-status status-<?= strtolower($manager['status']) ?>">
-                            <?= esc($manager['status'] === 'active' ? 'Aktif' : 'Tidak Aktif') ?>
-                        </span>
-
-                        <?php if ($manager['agency_id']): ?>
-                            <?php
-                            $agencyModel = new \App\Models\AgencyModel();
-                            $agency = $agencyModel->find($manager['agency_id']);
-                            ?>
-                            <span class="agency-badge">
-                                <i class="fas fa-tag me-1"></i>
-                                <?= esc($agency['name'] ?? 'Tidak Diketahui') ?>
+                        <div>
+                            <span class="manager-status status-<?= strtolower($manager['status']) ?>">
+                                <?= esc($manager['status'] === 'active' ? 'Aktif' : 'Tidak Aktif') ?>
                             </span>
-                        <?php endif; ?>
+                            <?php if ($manager['agency_id']): ?>
+                                <?php
+                                $agencyModel = new \App\Models\AgencyModel();
+                                $agency = $agencyModel->find($manager['agency_id']);
+                                ?>
+                                <div class="agency-badge mt-1">
+                                    <i class="fas fa-tag me-1"></i>
+                                    <?= esc($agency['name'] ?? 'Tidak Diketahui') ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="manager-actions">
+                            <a href="/admin/managers/<?= $manager['id'] ?>/edit" class="btn btn-sm btn-outline-primary me-2" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <?php if (!$manager['agency_id']): ?>
+                                <form action="/admin/managers/<?= $manager['id'] ?>/delete" method="post" class="d-inline"
+                                      onsubmit="return confirm('Adakah anda pasti mahu memadam pengurus ini?')">
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" disabled title="Pengurus perlu dinyah tugaskan daripada agensi terlebih dahulu">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>

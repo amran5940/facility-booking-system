@@ -17,6 +17,10 @@ class BookingModel extends Model
         'end_date',
         'status',
         'notes',
+        'payment_gateway',
+        'deposit_amount',
+        'payment_status',
+        'total_amount',
     ];
     protected $useTimestamps = true;
     protected $validationRules = [
@@ -26,5 +30,9 @@ class BookingModel extends Model
         'end_date' => 'required|valid_date',
         'status' => 'required|in_list[pending,approved,cancelled]',
         'notes' => 'permit_empty|max_length[500]',
+        'payment_gateway' => 'required|in_list[online_banking,credit_card,debit_card,cash]',
+        'deposit_amount' => 'required|numeric|greater_than[0]',
+        'payment_status' => 'required|in_list[pending,paid,refunded]',
+        'total_amount' => 'permit_empty|numeric|greater_than[0]',
     ];
 }

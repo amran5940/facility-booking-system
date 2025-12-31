@@ -15,10 +15,12 @@ $routes->get('/logout', 'AuthController::logout');
 
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
 	$routes->get('/dashboard', 'DashboardController::index');
+	$routes->get('/change-password', 'AuthController::changePassword');
 	$routes->post('/change-password', 'AuthController::doChangePassword');
 	$routes->post('/user/update-profile', 'AuthController::updateProfile');
 
-	$routes->get('/admin', 'DashboardController::admin', ['filter' => 'role:admin']);
+	$routes->get('/admin', 'DashboardController::admin', ['filter' => 'role:admin']); // Alias
+	$routes->get('/admin/dashboard', 'DashboardController::admin', ['filter' => 'role:admin']);
 	$routes->get('/manager', 'DashboardController::manager', ['filter' => 'role:manager']);
 	$routes->get('/user', 'DashboardController::user', ['filter' => 'role:user,manager,admin']);
 
@@ -33,6 +35,17 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 		$routes->post('agencies/(:num)/unassign', 'AgenciesController::unassignManager/$1');
 		$routes->post('managers', 'AgenciesController::createManager');
 		$routes->get('managers', 'AgenciesController::listManagers');
+		$routes->get('managers/(:num)/edit', 'AgenciesController::editManager/$1');
+		$routes->post('managers/(:num)/update', 'AgenciesController::updateManager/$1');
+		$routes->post('managers/(:num)/delete', 'AgenciesController::deleteManager/$1');
+
+		$routes->get('users', 'UserController::index');
+		$routes->get('users/create', 'UserController::create');
+		$routes->post('users', 'UserController::store');
+		$routes->get('users/(:num)/edit', 'UserController::edit/$1');
+		$routes->post('users/(:num)/update', 'UserController::update/$1');
+		$routes->post('users/(:num)/delete', 'UserController::delete/$1');
+		$routes->post('users/(:num)/toggle-status', 'UserController::toggleStatus/$1');
 		$routes->post('facility-categories', 'AgenciesController::createFacilityCategory');
 		$routes->get('facility-categories', 'AgenciesController::listFacilityCategories');
 		$routes->get('facility-categories/(:num)/edit', 'AgenciesController::editFacilityCategory/$1');
@@ -52,6 +65,7 @@ $routes->group('', ['filter' => 'auth'], static function ($routes) {
 	});
 
 	$routes->group('manager', ['filter' => 'role:manager'], static function ($routes) {
+		$routes->get('dashboard', 'DashboardController::manager');
 		$routes->get('facilities', 'FacilityController::index');
 		$routes->get('facilities/create', 'FacilityController::create');
 		$routes->post('facilities', 'FacilityController::store');

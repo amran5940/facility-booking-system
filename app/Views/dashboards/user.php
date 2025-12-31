@@ -323,7 +323,7 @@
 </style>
 
 <div class="dashboard-shell">
-<div class="container">
+<div class="container mt-5">
 <!-- Welcome Section -->
 <div class="welcome-section fade-in-up">
     <div class="row align-items-center">
@@ -332,7 +332,9 @@
             <h1><i class="fas fa-user me-3"></i>Selamat Datang</h1>
             <p class="mb-0">Temui dan tempah fasiliti yang tersedia untuk kegunaan anda.</p>
             <div class="d-flex flex-wrap gap-2 mt-3">
-                <span class="badge-soft"><i class="fas fa-landmark me-1"></i><?= isset($agencyFacilities) ? count($agencyFacilities) : 0 ?> agensi</span>
+                <?php if (($userType ?? 'public') === 'agency'): ?>
+                    <span class="badge-soft"><i class="fas fa-landmark me-1"></i><?= isset($agencyFacilities) ? count($agencyFacilities) : 0 ?> agensi</span>
+                <?php endif; ?>
                 <span class="badge-soft"><i class="fas fa-warehouse me-1"></i><?= isset($publicFacilities) ? count($publicFacilities) : 0 ?> fasiliti awam</span>
             </div>
         </div>
@@ -443,10 +445,10 @@
     </div>
 </div>
 
-    <?php if (!empty($agencyFacilities) || !empty($publicFacilities)): ?>
+    <?php if (!empty($agencyFacilities) || !empty($publicFacilitiesByAgency)): ?>
         
         <!-- Agency Facilities -->
-        <?php if (!empty($agencyFacilities)): ?>
+        <?php if (($userType ?? 'public') === 'agency' && !empty($agencyFacilities)): ?>
             <?php foreach ($agencyFacilities as $agencyData): ?>
                 <div class="agency-section mb-5">
                     <div class="agency-header mb-4">
@@ -491,48 +493,50 @@
             <?php endforeach; ?>
         <?php endif; ?>
 
-        <!-- Public Facilities -->
-        <?php if (!empty($publicFacilities)): ?>
-            <div class="agency-section mb-5">
-                <div class="agency-header mb-4">
-                    <h3 class="agency-title">
-                        <i class="fas fa-globe me-2" style="color: var(--brand-black);"></i>
-                        Fasiliti Awam
-                    </h3>
-                    <p class="agency-description text-muted">
-                        Fasiliti yang disediakan secara umum untuk kegunaan semua pengguna.
-                    </p>
-                </div>
-                
-                <div class="facility-grid stagger-animation">
-                    <?php foreach ($publicFacilities as $facility): ?>
-                        <div class="facility-card">
-                            <div class="card-body">
-                                <div class="facility-icon">
-                                    <i class="fas fa-globe"></i>
+        <!-- Public Facilities (only for public users) -->
+        <?php if (($userType ?? 'public') === 'public' && !empty($publicFacilitiesByAgency)): ?>
+            <?php foreach ($publicFacilitiesByAgency as $agencyData): ?>
+                <div class="agency-section mb-5">
+                    <div class="agency-header mb-4">
+                        <h3 class="agency-title">
+                            <i class="fas fa-globe me-2" style="color: var(--brand-black);"></i>
+                            <?= esc($agencyData['agency']['name'] ?? 'Fasiliti Awam Umum') ?>
+                        </h3>
+                        <p class="agency-description text-muted">
+                            Fasiliti awam yang ditawarkan oleh <?= esc($agencyData['agency']['name'] ?? 'agensi berkaitan') ?>.
+                        </p>
+                    </div>
+                    
+                    <div class="facility-grid stagger-animation">
+                        <?php foreach ($agencyData['facilities'] as $facility): ?>
+                            <div class="facility-card">
+                                <div class="card-body">
+                                    <div class="facility-icon">
+                                        <i class="fas fa-globe"></i>
+                                    </div>
+                                    <h5 class="facility-name"><?= esc($facility['name']) ?></h5>
+                                    <span class="facility-type">
+                                        <i class="fas fa-tag me-1"></i>
+                                        <?= esc($facility['category_name'] ?? 'Fasiliti Awam') ?>
+                                    </span>
+                                    <br>
+                                    <span class="agency-badge">
+                                        <i class="fas fa-university me-1"></i>
+                                        <?= esc($agencyData['agency']['name'] ?? 'Umum') ?>
+                                    </span>
+                                    <br>
+                                    <p class="facility-description small text-muted mb-3">
+                                        <?= esc($facility['description'] ?: 'Tiada penerangan tambahan.') ?>
+                                    </p>
+                                    <a href="/user/bookings/create/<?= $facility['id'] ?>" class="book-btn">
+                                        <i class="fas fa-calendar-plus me-2"></i>Tempah Sekarang
+                                    </a>
                                 </div>
-                                <h5 class="facility-name"><?= esc($facility['name']) ?></h5>
-                                <span class="facility-type">
-                                    <i class="fas fa-tag me-1"></i>
-                                    <?= esc($facility['category_name'] ?? 'Fasiliti Awam') ?>
-                                </span>
-                                <br>
-                                <span class="agency-badge">
-                                    <i class="fas fa-users me-1"></i>
-                                    Awam
-                                </span>
-                                <br>
-                                <p class="facility-description small text-muted mb-3">
-                                    <?= esc($facility['description'] ?: 'Tiada penerangan tambahan.') ?>
-                                </p>
-                                <a href="/user/bookings/create/<?= $facility['id'] ?>" class="book-btn">
-                                    <i class="fas fa-calendar-plus me-2"></i>Tempah Sekarang
-                                </a>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         <?php endif; ?>
 
     <?php else: ?>

@@ -18,11 +18,11 @@ class AuthController extends BaseController
         $user      = $userModel->where('email', $email)->first();
 
         if (!$user || !password_verify($password, $user['password'])) {
-            return redirect()->back()->with('error', 'Invalid credentials');
+            return redirect()->back()->with('login_error', 'Kredensial tidak sah');
         }
 
         if ($user['approved'] == 0) {
-            return redirect()->back()->with('error', 'Account not approved yet');
+            return redirect()->back()->with('login_error', 'Akaun belum diluluskan');
         }
 
         session()->set('user', [
@@ -73,6 +73,15 @@ class AuthController extends BaseController
     {
         session()->remove('user');
         return redirect()->to('/');
+    }
+
+    public function changePassword()
+    {
+        if (!session()->has('user')) {
+            return redirect()->to('/login');
+        }
+
+        return view('auth/change_password');
     }
 
     public function doChangePassword()

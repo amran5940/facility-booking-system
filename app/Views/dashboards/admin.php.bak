@@ -251,7 +251,7 @@
     <div class="row align-items-center">
         <div class="col-lg-8">
             <h1><i class="fas fa-chart-line me-3"></i><?= lang('App.admin_dashboard') ?></h1>
-            <p>Kawal dan pantau sistem tempahan aset dengan mudah. Dapatkan gambaran keseluruhan prestasi sistem anda.</p>
+            <p>Kawal dan pantau sistem tempahan fasiliti dengan mudah. Dapatkan gambaran keseluruhan prestasi sistem anda.</p>
         </div>
         <div class="col-lg-4 text-end">
             <i class="fas fa-crown" style="font-size: 4rem; opacity: 0.3;"></i>

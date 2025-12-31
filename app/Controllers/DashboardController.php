@@ -145,40 +145,84 @@ class DashboardController extends BaseController
 
     public function user()
     {
-        $user = session('user');
+        $sessionUser = session('user');
+        if (!$sessionUser) {
+            return redirect()->to('/login');
+        }
+
+        // Always fetch fresh user info so admin edits reflect on dashboard
+        $userModel = new UserModel();
+        $sessionUserId = $sessionUser['id'] ?? null;
+        if (!$sessionUserId) {
+            session()->destroy();
+            return redirect()->to('/login');
+        }
+
+        $user = $userModel->find($sessionUserId);
+        if (!$user) {
+            session()->destroy();
+            return redirect()->to('/login');
+        }
+        session()->set('user', $user);
+
         $agencyModel = new AgencyModel();
         $facilityModel = new FacilityModel();
 
-        // Get all agencies
+        // Get all agencies (needed for lookups)
         $agencies = $agencyModel->findAll();
 
-        // Get facilities grouped by agency
+        // Facilities grouped for display
         $agencyFacilities = [];
-        foreach ($agencies as $agency) {
-            $facilities = $facilityModel->select('facilities.*, facility_categories.name as category_name')
-                ->join('facility_categories', 'facility_categories.id = facilities.category_id', 'left')
-                ->where('facilities.agency_id', $agency['id'])
-                ->where('facilities.status', 'active')
-                ->findAll();
-            if (!empty($facilities)) {
-                $agencyFacilities[] = [
-                    'agency' => $agency,
-                    'facilities' => $facilities
-                ];
+
+        if (($user['user_type'] ?? '') === 'agency') {
+            // Agency user: show all facilities (public + agency) from all agencies
+            foreach ($agencies as $agency) {
+                $facilities = $facilityModel->select('facilities.*, facility_categories.name as category_name')
+                    ->join('facility_categories', 'facility_categories.id = facilities.category_id', 'left')
+                    ->where('facilities.agency_id', $agency['id'])
+                    ->where('facilities.status', 'active')
+                    ->findAll();
+                if (!empty($facilities)) {
+                    $agencyFacilities[] = [
+                        'agency' => $agency,
+                        'facilities' => $facilities,
+                    ];
+                }
             }
         }
 
-        // Get public facilities
-        $publicFacilities = $facilityModel->select('facilities.*, facility_categories.name as category_name')
-            ->join('facility_categories', 'facility_categories.id = facilities.category_id', 'left')
-            ->where('facilities.agency_id IS NULL')
-            ->where('facilities.status', 'active')
-            ->findAll();
+        // Public facilities (for public users)
+        $publicFacilities = [];
+        $publicFacilitiesByAgency = [];
+        if (($user['user_type'] ?? 'public') === 'public') {
+            $publicFacilities = $facilityModel->select('facilities.*, facility_categories.name as category_name, agencies.name as agency_name')
+                ->join('facility_categories', 'facility_categories.id = facilities.category_id', 'left')
+                ->join('agencies', 'agencies.id = facilities.agency_id', 'left')
+                ->where('facilities.type', 'public')
+                ->where('facilities.status', 'active')
+                ->findAll();
 
-        if ($user['user_type'] === 'agency') {
+            // Group public facilities by offering agency (if any)
+            foreach ($publicFacilities as $facility) {
+                $agencyKey = $facility['agency_id'] ?? 'public_general';
+                if (!isset($publicFacilitiesByAgency[$agencyKey])) {
+                    $publicFacilitiesByAgency[$agencyKey] = [
+                        'agency' => [
+                            'id' => $facility['agency_id'],
+                            'name' => $facility['agency_name'] ?? 'Fasiliti Awam Umum',
+                        ],
+                        'facilities' => []
+                    ];
+                }
+                $publicFacilitiesByAgency[$agencyKey]['facilities'][] = $facility;
+            }
+        }
+
+        if (($user['user_type'] ?? '') === 'agency') {
             $userAgencyFacilities = $facilityModel->select('facilities.*, facility_categories.name as category_name')
                 ->join('facility_categories', 'facility_categories.id = facilities.category_id', 'left')
                 ->where('facilities.agency_id', $user['agency_id'])
+                ->where('facilities.type', 'agency')
                 ->where('facilities.status', 'active')
                 ->findAll();
             $publicFacilities = array_merge($publicFacilities, $userAgencyFacilities);
@@ -187,7 +231,9 @@ class DashboardController extends BaseController
         return view('dashboards/user', [
             'agencyFacilities' => $agencyFacilities,
             'publicFacilities' => $publicFacilities,
+            'publicFacilitiesByAgency' => $publicFacilitiesByAgency,
             'agencies' => $agencies,
+            'userType' => $user['user_type'] ?? 'public',
         ]);
     }
 

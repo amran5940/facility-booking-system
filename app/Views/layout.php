@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Tempahan Aset & Fasiliti</title>
+    <title>Sistem Tempahan Fasiliti</title>
+    <link rel="icon" href="/images/kedah-coat.svg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,6 +27,14 @@
             background: var(--navbar-bg) !important;
             box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             border-bottom: 1px solid #eceff3;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+        }
+
+        body {
+            padding-top: 76px;
         }
 
         .navbar-custom .navbar-brand {
@@ -208,13 +217,26 @@
         .stagger-animation > *:nth-child(2) { animation-delay: 0.2s; }
         .stagger-animation > *:nth-child(3) { animation-delay: 0.3s; }
         .stagger-animation > *:nth-child(4) { animation-delay: 0.4s; }
+
+        .site-footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: #e2e8f0;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            border-top: 4px solid #ffcc00;
+        }
+
+        .site-footer a { color: #cce6ff; text-decoration: none; }
+        .site-footer a:hover { color: #fff; text-decoration: underline; }
+        .site-footer .footer-brand { font-weight: 700; font-size: 1.1rem; }
+        .site-footer .footer-meta { color: rgba(226,232,240,0.78); font-size: 0.95rem; }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-calendar-check me-2"></i>Tempahan Aset & Fasiliti
+                <img src="/images/kedah-coat.svg" alt="Jata Negeri Kedah" style="height: 32px; margin-right: 10px;">Sistem Tempahan Fasiliti
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -273,6 +295,27 @@
 
         <?= $this->renderSection('content') ?>
     </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand d-flex align-items-center mb-2">
+                        <img src="/images/kedah-coat.svg" alt="Jata Negeri Kedah" style="height: 32px; margin-right: 10px;">
+                        Sistem Tempahan Fasiliti
+                    </div>
+                    <div class="footer-meta">Portal rasmi untuk menempah aset dan fasiliti kerajaan Kedah dengan mudah dan telus.</div>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="mb-2">
+                        <a href="#">Dasar Privasi</a> · <a href="#">Terma Penggunaan</a> · <a href="#">Hubungi</a>
+                    </div>
+                    <small class="footer-meta">© <?php echo date('Y'); ?> Kerajaan Negeri Kedah. Semua hak cipta terpelihara.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
