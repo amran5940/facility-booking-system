@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreatePaymentGatewaysTable extends Migration
+class CreateFacilityCategoryFieldsTable extends Migration
 {
     public function up()
     {
@@ -15,35 +15,36 @@ class CreatePaymentGatewaysTable extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'name' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
+            'category_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
             ],
-            'code' => [
+            'field_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
-                'unique'     => true,
             ],
-            'description' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'api_key' => [
-                'type'       => 'TEXT',
-                'null'       => true,
-            ],
-            'api_secret' => [
-                'type'       => 'TEXT',
-                'null'       => true,
-            ],
-            'merchant_id' => [
+            'field_label' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
-                'null'       => true,
             ],
-            'config' => [
+            'field_type' => [
+                'type'       => 'ENUM',
+                'constraint' => ['text', 'textarea', 'number', 'date', 'select', 'checkbox'],
+            ],
+            'options' => [
                 'type' => 'TEXT',
                 'null' => true,
+            ],
+            'required' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 0,
+            ],
+            'sort_order' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'default'    => 0,
             ],
             'created_at' => [
                 'type' => 'DATETIME',
@@ -54,13 +55,12 @@ class CreatePaymentGatewaysTable extends Migration
                 'null' => true,
             ],
         ]);
-
         $this->forge->addKey('id', true);
-        $this->forge->createTable('payment_gateways');
+        $this->forge->createTable('facility_category_fields');
     }
 
     public function down()
     {
-        $this->forge->dropTable('payment_gateways');
+        $this->forge->dropTable('facility_category_fields');
     }
 }
