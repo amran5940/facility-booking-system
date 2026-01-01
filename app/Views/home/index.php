@@ -137,9 +137,7 @@
 
         .site-footer {
             padding: 64px 0;
-            background: radial-gradient(circle at 18% 20%, rgba(64,201,255,0.12), transparent 32%),
-                        radial-gradient(circle at 78% 16%, rgba(106,125,255,0.1), transparent 34%),
-                        linear-gradient(135deg, #0b1224 0%, #0f172a 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
             color: #e5e7eb;
             border-top: 1px solid rgba(255,255,255,0.08);
         }
