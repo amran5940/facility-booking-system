@@ -28,6 +28,12 @@ class CreateFacilityCategoriesTable extends Migration
                 'constraint' => ['active', 'inactive'],
                 'default'    => 'active',
             ],
+            'created_by' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

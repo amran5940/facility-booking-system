@@ -45,6 +45,11 @@ class CreatePaymentGatewaysTable extends Migration
                 'type' => 'TEXT',
                 'null' => true,
             ],
+            'is_active' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'default'    => 1,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
